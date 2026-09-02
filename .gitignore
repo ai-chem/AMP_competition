@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[oc]
+*.egg-info/
+build/
+dist/
+wheels/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Virtual environments
+.venv/
+venv/
+
+# Generated submission outputs
+generate/*.fasta
+
+# Large model artifacts — keep directory structure, not weights
+checkpoint/*
+!checkpoint/.gitkeep
+*.safetensors
+*.bin
+*.pt
+*.ckpt
+*.h5
+
+# Data dumps (commit small samples and READMEs only)
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+data/external/*
+!data/external/.gitkeep
+
+# Notebooks / experiment clutter
+.ipynb_checkpoints/
+wandb/
+runs/
+outputs/
+lightning_logs/
+
+# OS / editors
+.DS_Store
+.idea/
+.vscode/

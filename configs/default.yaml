@@ -1,0 +1,24 @@
+seed: 42
+
+model:
+  id: AI4PD/ProtGPT3-1.3B
+  dtype: bfloat16
+  trust_remote_code: true
+
+generation:
+  n_sequences: 50000
+  top_k: 100
+  min_length: 8
+  max_length: 50
+  temperature: 0.8
+  top_p: 0.9
+
+lora:
+  r: 16
+  lora_alpha: 32
+  lora_dropout: 0.05
+  target_modules:
+    - q_proj
+    - k_proj
+    - v_proj
+    - o_proj

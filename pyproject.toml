@@ -1,0 +1,48 @@
+[project]
+name = "amp-competition"
+version = "0.1.0"
+description = "Reproducible AMP generation pipeline for the AMP Challenge 2027"
+readme = "README.md"
+license = "MIT"
+authors = [
+    { name = "ai-chem" },
+]
+requires-python = ">=3.11,<3.12"
+dependencies = [
+    "accelerate>=1.4",
+    "huggingface-hub>=0.30",
+    "levenshtein>=0.27",
+    "numpy>=2.2",
+    "peft>=0.15",
+    "pyyaml>=6.0",
+    "safetensors>=0.5",
+    "torch>=2.6",
+    "tqdm>=4.67",
+    "transformers>=4.51",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3",
+]
+
+[project.scripts]
+generate = "amp_competition.generate:main"
+
+[build-system]
+requires = ["uv_build>=0.11,<0.12"]
+build-backend = "uv_build"
+
+# Linux (A100): CUDA 12.6 wheels. macOS falls back to PyPI (CPU/MPS).
+# After `nvidia-smi` on the server, switch the index if needed:
+#   cu124 → https://download.pytorch.org/whl/cu124
+#   cu128 → https://download.pytorch.org/whl/cu128
+[tool.uv.sources]
+torch = [
+    { index = "pytorch-cu126", marker = "sys_platform == 'linux'" },
+]
+
+[[tool.uv.index]]
+name = "pytorch-cu126"
+url = "https://download.pytorch.org/whl/cu126"
+explicit = true

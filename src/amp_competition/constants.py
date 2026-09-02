@@ -1,0 +1,8 @@
+"""Shared sequence constraints from the AMP Challenge 2027 rules."""
+
+STANDARD_AMINO_ACIDS = "ACDEFGHIKLMNPQRSTVWY"
+MIN_LENGTH = 8
+MAX_LENGTH = 50
+LIBRARY_SIZE = 50_000
+TOP_SIZE = 100
+DEFAULT_SEED = 42
