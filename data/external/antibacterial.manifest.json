@@ -1,0 +1,12 @@
+{
+  "downloaded_at_utc": "2026-09-06T16:38:43.147963+00:00",
+  "fasta_record_count": 39448,
+  "local_path": "data/external/antibacterial.fasta",
+  "schema_version": 1,
+  "sha256": "cbbeac64ba95746d87961e8ad9dd0849ae8058d15a300b2e7f6990730ca521e9",
+  "size_bytes": 4318298,
+  "source_commit": "5c8a5d8e2551c8cf572d3d3bfcfe7633b109d91e",
+  "source_path": "data/antibacterial.fasta",
+  "source_repository": "https://github.com/szczurek-lab/amp-challenge-2027",
+  "source_url": "https://raw.githubusercontent.com/szczurek-lab/amp-challenge-2027/5c8a5d8e2551c8cf572d3d3bfcfe7633b109d91e/data/antibacterial.fasta"
+}

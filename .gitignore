@@ -37,6 +37,8 @@ data/processed/*
 !data/processed/.gitkeep
 data/external/*
 !data/external/.gitkeep
+!data/external/antibacterial.manifest.json
+!data/external/antibacterial.fasta
 
 # Notebooks / experiment clutter
 .ipynb_checkpoints/
