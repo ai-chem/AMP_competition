@@ -25,6 +25,10 @@ dependencies = [
 dev = [
     "pytest>=8.3",
 ]
+analysis = [
+    "matplotlib>=3.9",
+    "pandas>=2.2",
+]
 
 [project.scripts]
 generate = "amp_competition.generate:main"
