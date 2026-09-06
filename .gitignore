@@ -14,7 +14,12 @@ wheels/
 venv/
 
 # Generated submission outputs
-generate/*.fasta
+generate/**/*.fasta
+generate/**/*.partial.fasta
+generate/**/*.stats.json
+generate/run.json
+generate/config.resolved.yaml
+generate/length_histogram.png
 
 # Large model artifacts — keep directory structure, not weights
 checkpoint/*

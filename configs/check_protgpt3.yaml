@@ -1,0 +1,6 @@
+extends: default.yaml
+
+# Smoke-check tokenization + a few ProtGPT3 samples.
+generation:
+  n_sequences: 4
+  batch_size: 4

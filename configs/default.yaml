@@ -1,4 +1,8 @@
+# Canonical AMP Challenge run config.
+# Other files may `extends: default.yaml` and override only what changes.
+
 seed: 42
+deterministic: true
 
 model:
   id: AI4PD/ProtGPT3-1.3B
@@ -6,12 +10,15 @@ model:
   trust_remote_code: true
 
 generation:
-  n_sequences: 50000
+  n_sequences: 100000
   top_k: 100
   min_length: 8
   max_length: 50
+  batch_size: 256
   temperature: 0.8
   top_p: 0.9
+  prompt: "1"
+  checkpoint_every: 10000
 
 lora:
   r: 16
@@ -22,3 +29,9 @@ lora:
     - k_proj
     - v_proj
     - o_proj
+
+train:
+  lr: 0.0001
+  steps: 8
+  batch_size: 8
+  dropout: 0.0

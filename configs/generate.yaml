@@ -1,0 +1,6 @@
+extends: default.yaml
+
+# Mass ProtGPT3 library sampling (length 8–50).
+generation:
+  n_sequences: 100000
+  batch_size: 256

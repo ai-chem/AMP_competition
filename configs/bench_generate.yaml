@@ -1,0 +1,6 @@
+extends: default.yaml
+
+# Throughput / VRAM / reproducibility probe for base ProtGPT3 sampling.
+generation:
+  n_sequences: 512
+  batch_size: 256
