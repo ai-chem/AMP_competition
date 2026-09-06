@@ -33,4 +33,9 @@ sequences outside 8–50 residues, non-canonical amino acids, and duplicate
 occurrences. It also reports reproducibly sampled pairwise Levenshtein
 similarity; use `--sample-pairs 0` to skip that calculation.
 
+The cleaned CSV columns are `record_id`, `charge`, `disulfide`,
+`source_databases`, `activity_tags`, `header`, `sequence`, and
+`sequence_length`. The two tag columns are JSON arrays in CSV cells so that
+their individual values remain machine-readable.
+
 Verifier source: https://github.com/szczurek-lab/amp-challenge-2027/blob/main/scripts/verify_submission.py

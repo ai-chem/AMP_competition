@@ -22,17 +22,22 @@ from typing import Iterable
 
 DEFAULT_ALPHABET = "ACDEFGHIKLMNPQRSTVWY"
 CLEANED_COLUMNS = [
-    "source_record_number",
     "record_id",
+    "charge",
+    "disulfide",
+    "source_databases",
+    "activity_tags",
     "header",
     "sequence",
     "sequence_length",
-    "invalid_residues",
-    "is_canonical",
 ]
 REJECTED_COLUMNS = [
     "source_record_number",
     "record_id",
+    "charge",
+    "disulfide",
+    "source_databases",
+    "activity_tags",
     "header",
     "sequence",
     "sequence_length",
@@ -42,9 +47,30 @@ REJECTED_COLUMNS = [
 ]
 
 
-def read_fasta(path: Path) -> list[dict[str, str | int]]:
+def _parse_header(header: str) -> dict[str, object]:
+    """Extract structured organizer metadata from a FASTA header."""
+    tokens = header.split()
+    metadata = dict(
+        token.split("=", maxsplit=1) for token in tokens[1:] if "=" in token
+    )
+    return {
+        "record_id": tokens[0] if tokens else "",
+        "charge": float(metadata["charge"]) if "charge" in metadata else None,
+        "disulfide": int(metadata["disulfide"])
+        if "disulfide" in metadata
+        else None,
+        "source_databases": metadata.get("dbs", "").split("|")
+        if metadata.get("dbs")
+        else [],
+        "activity_tags": metadata.get("activity", "").split("|")
+        if metadata.get("activity")
+        else [],
+    }
+
+
+def read_fasta(path: Path) -> list[dict[str, object]]:
     """Read a FASTA file while preserving each complete header."""
-    records: list[dict[str, str | int]] = []
+    records: list[dict[str, object]] = []
     header: str | None = None
     sequence_parts: list[str] = []
 
@@ -55,7 +81,7 @@ def read_fasta(path: Path) -> list[dict[str, str | int]]:
         records.append(
             {
                 "source_record_number": len(records) + 1,
-                "record_id": header.split(maxsplit=1)[0] if header else "",
+                **_parse_header(header),
                 "header": header,
                 "sequence": sequence,
                 "sequence_length": len(sequence),
@@ -140,14 +166,22 @@ def sampled_similarity_summary(
 
 def _write_csv(
     path: Path,
-    rows: list[dict[str, str | int]],
+    rows: list[dict[str, object]],
     fieldnames: list[str],
 ) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", newline="") as handle:
         writer = csv.DictWriter(handle, fieldnames=fieldnames)
         writer.writeheader()
-        writer.writerows(rows)
+        for row in rows:
+            writer.writerow(
+                {
+                    fieldname: json.dumps(row[fieldname])
+                    if isinstance(row.get(fieldname), list)
+                    else row.get(fieldname, "")
+                    for fieldname in fieldnames
+                }
+            )
 
 
 def audit_fasta(
@@ -169,8 +203,8 @@ def audit_fasta(
 
     records = read_fasta(input_path)
     allowed_residues = set(alphabet)
-    clean_records: list[dict[str, str | int]] = []
-    rejected_records: list[dict[str, str | int]] = []
+    clean_records: list[dict[str, object]] = []
+    rejected_records: list[dict[str, object]] = []
     first_clean_occurrence: dict[str, int] = {}
     rejection_counts: Counter[str] = Counter()
 
@@ -210,9 +244,7 @@ def audit_fasta(
             first_clean_occurrence[sequence] = int(record["source_record_number"])
             clean_records.append(
                 {
-                    **record,
-                    "invalid_residues": invalid_residues,
-                    "is_canonical": True,
+                    fieldname: record[fieldname] for fieldname in CLEANED_COLUMNS
                 }
             )
 
