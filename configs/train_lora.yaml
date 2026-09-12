@@ -1,8 +1,19 @@
 extends: default.yaml
 
-# Frozen-base LoRA adapter check / short adapter run.
+# LoRA fine-tune on the cleaned antibacterial peptide table.
+data:
+  csv: data/raw/antibacterial_clean.csv
+  val_fraction: 0.1
+
 train:
   lr: 0.0001
+  epochs: 5
+  batch_size: 64
+  dropout: 0.05
+  weight_decay: 0.01
+  warmup_ratio: 0.05
+  max_grad_norm: 1.0
+  patience: 2
+  save_dir: checkpoint/lora_antibacterial
+  # kept for scripts/check_lora.py smoke overfit
   steps: 8
-  batch_size: 8
-  dropout: 0.0

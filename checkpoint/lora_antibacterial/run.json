@@ -1,0 +1,138 @@
+{
+  "run_id": "20260912T094619Z_train_lora",
+  "command": "train_lora",
+  "status": "completed",
+  "started_at": "2026-09-12T09:46:19.039331+00:00",
+  "seed": 42,
+  "deterministic": true,
+  "config": {
+    "seed": 42,
+    "deterministic": true,
+    "model": {
+      "id": "AI4PD/ProtGPT3-1.3B",
+      "dtype": "bfloat16",
+      "trust_remote_code": true
+    },
+    "generation": {
+      "n_sequences": 100000,
+      "top_k": 100,
+      "min_length": 8,
+      "max_length": 50,
+      "batch_size": 256,
+      "temperature": 0.8,
+      "top_p": 0.9,
+      "prompt": "1",
+      "checkpoint_every": 10000
+    },
+    "lora": {
+      "r": 16,
+      "lora_alpha": 32,
+      "lora_dropout": 0.05,
+      "target_modules": [
+        "q_proj",
+        "k_proj",
+        "v_proj",
+        "o_proj"
+      ]
+    },
+    "train": {
+      "lr": 0.0001,
+      "steps": 8,
+      "batch_size": 64,
+      "dropout": 0.05,
+      "epochs": 5,
+      "weight_decay": 0.01,
+      "warmup_ratio": 0.05,
+      "max_grad_norm": 1.0,
+      "patience": 2,
+      "save_dir": "/nfs/home/igolovkin/AMP_competition/checkpoint/lora_antibacterial"
+    },
+    "data": {
+      "csv": "/nfs/home/igolovkin/AMP_competition/data/raw/antibacterial_clean.csv",
+      "val_fraction": 0.1,
+      "min_length": 8,
+      "max_length": 50
+    }
+  },
+  "git": {
+    "commit": "371b17d99574f7758e4ec5e2d88df7b4a0faf2ad",
+    "branch": "main",
+    "dirty": true
+  },
+  "env": {
+    "hostname": "aichem",
+    "python": "3.10.12",
+    "argv": [
+      "scripts/train_lora.py",
+      "--config",
+      "train_lora.yaml"
+    ],
+    "cwd": "/nfs/home/igolovkin/AMP_competition",
+    "torch": "2.11.0+cu130",
+    "cuda_available": true,
+    "gpu": "NVIDIA RTX A6000",
+    "transformers": "5.16.1",
+    "peft": "0.20.0"
+  },
+  "extra": {
+    "best_val_loss": 2.1312378017208244,
+    "epochs_ran": 5,
+    "steps": 2775,
+    "elapsed_sec": 678.74,
+    "n_train": 35498,
+    "n_val": 3950,
+    "data_stats": {
+      "rows": 39448,
+      "empty": 0,
+      "invalid": 0,
+      "duplicates": 0,
+      "accepted": 39448
+    },
+    "trainable_params": 1810432,
+    "history": [
+      {
+        "epoch": 1,
+        "step": 555,
+        "train_loss": 2.537438,
+        "val_loss": 2.360505,
+        "lr": 9.395576920623807e-05,
+        "best": true
+      },
+      {
+        "epoch": 2,
+        "step": 1110,
+        "train_loss": 2.267282,
+        "val_loss": 2.220882,
+        "lr": 7.005892838478711e-05,
+        "best": true
+      },
+      {
+        "epoch": 3,
+        "step": 1665,
+        "train_loss": 2.157687,
+        "val_loss": 2.159985,
+        "lr": 3.7707491312020625e-05,
+        "best": true
+      },
+      {
+        "epoch": 4,
+        "step": 2220,
+        "train_loss": 2.106538,
+        "val_loss": 2.135559,
+        "lr": 1.0537198310314e-05,
+        "best": true
+      },
+      {
+        "epoch": 5,
+        "step": 2775,
+        "train_loss": 2.085593,
+        "val_loss": 2.131238,
+        "lr": 0.0,
+        "best": true
+      }
+    ],
+    "best_dir": "/nfs/home/igolovkin/AMP_competition/checkpoint/lora_antibacterial/best",
+    "last_dir": "/nfs/home/igolovkin/AMP_competition/checkpoint/lora_antibacterial/last"
+  },
+  "finished_at": "2026-09-12T09:58:06.300902+00:00"
+}

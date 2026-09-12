@@ -8,6 +8,8 @@ Run from the repo root with `PYTHONPATH=src` (or `uv run python …` after `uv s
 |---|---|---|
 | `check_protgpt3.py` | `configs/check_protgpt3.yaml` | Tokenizer + a few ProtGPT3 samples |
 | `check_lora.py` | `configs/train_lora.yaml` | LoRA trains, base stays frozen |
+| `train_lora.py` | `configs/train_lora.yaml` | LoRA on `antibacterial_clean.csv`; saves best val-loss adapter |
+| `eval_lora_generate.py` | `configs/train_lora.yaml` | EOS / length histogram / train-copy check vs base |
 | `bench_generate.py` | `configs/bench_generate.yaml` | Speed, VRAM, same-seed reproducibility |
 | `verify_submission.py` | — | Official AMP Challenge 2027 verifier |
 | `audit_fasta.py` | — | Audit a FASTA and write cleaned/rejected CSV files plus a JSON report |

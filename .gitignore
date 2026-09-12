@@ -24,7 +24,10 @@ generate/length_histogram.png
 # Large model artifacts — keep directory structure, not weights
 checkpoint/*
 !checkpoint/.gitkeep
+!checkpoint/lora_antibacterial/
+checkpoint/lora_antibacterial/last/
 *.safetensors
+!checkpoint/lora_antibacterial/best/adapter_model.safetensors
 *.bin
 *.pt
 *.ckpt

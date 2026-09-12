@@ -1,0 +1,60 @@
+{
+  "best_val_loss": 2.1312378017208244,
+  "epochs_ran": 5,
+  "steps": 2775,
+  "elapsed_sec": 678.74,
+  "n_train": 35498,
+  "n_val": 3950,
+  "data_stats": {
+    "rows": 39448,
+    "empty": 0,
+    "invalid": 0,
+    "duplicates": 0,
+    "accepted": 39448
+  },
+  "trainable_params": 1810432,
+  "history": [
+    {
+      "epoch": 1,
+      "step": 555,
+      "train_loss": 2.537438,
+      "val_loss": 2.360505,
+      "lr": 9.395576920623807e-05,
+      "best": true
+    },
+    {
+      "epoch": 2,
+      "step": 1110,
+      "train_loss": 2.267282,
+      "val_loss": 2.220882,
+      "lr": 7.005892838478711e-05,
+      "best": true
+    },
+    {
+      "epoch": 3,
+      "step": 1665,
+      "train_loss": 2.157687,
+      "val_loss": 2.159985,
+      "lr": 3.7707491312020625e-05,
+      "best": true
+    },
+    {
+      "epoch": 4,
+      "step": 2220,
+      "train_loss": 2.106538,
+      "val_loss": 2.135559,
+      "lr": 1.0537198310314e-05,
+      "best": true
+    },
+    {
+      "epoch": 5,
+      "step": 2775,
+      "train_loss": 2.085593,
+      "val_loss": 2.131238,
+      "lr": 0.0,
+      "best": true
+    }
+  ],
+  "best_dir": "checkpoint/lora_antibacterial/best",
+  "last_dir": "checkpoint/lora_antibacterial/last"
+}

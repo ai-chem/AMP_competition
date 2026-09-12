@@ -26,7 +26,7 @@ Linux installs CUDA 12.6 PyTorch wheels by default. If the driver is newer or ol
 |---|---|
 | `configs/default.yaml` | Base: seed, model, generation, LoRA, train |
 | `configs/generate.yaml` | 100k library sampling |
-| `configs/train_lora.yaml` | Frozen-base LoRA check |
+| `configs/train_lora.yaml` | LoRA on antibacterial peptides; best adapter in `checkpoint/lora_antibacterial/best` |
 | `configs/check_protgpt3.yaml` | Tokenizer / generation smoke |
 | `configs/bench_generate.yaml` | Speed / VRAM / reproducibility |
 
@@ -53,6 +53,15 @@ Writes `generate/library.fasta` (100,000 unique peptides, length 8–50) and `ge
 
 FASTAs are gitignored. The generator is ProtGPT3-1.3B (`AI4PD/ProtGPT3-1.3B`), not the placeholder.
 
+## LoRA
+
+```bash
+PYTHONPATH=src python3 scripts/train_lora.py --config train_lora.yaml
+PYTHONPATH=src python3 scripts/eval_lora_generate.py
+```
+
+Best adapter: `checkpoint/lora_antibacterial/best/` (see that folder’s README for specs, val curve, and EOS / copy-check). CSV stays gitignored under `data/raw/`.
+
 ## Scripts
 
 See **[scripts/README.md](scripts/README.md)**.
@@ -68,13 +77,13 @@ See **[scripts/README.md](scripts/README.md)**.
 │   │   ├── protgpt3.py           # load / tokenize / sample
 │   │   ├── sample.py             # mass library 8–50 AA
 │   │   └── lora.py               # LoRA on frozen base
-│   ├── data/                     # corpus prep (not wired yet)
+│   ├── data/                     # peptide CSV loader / split
 │   ├── features/
 │   ├── predictors/               # MIC / hemolysis (not wired yet)
 │   └── filters/
 ├── data/                         # raw / processed / external
 ├── generate/                     # library.fasta (gitignored)
-├── checkpoint/                   # LoRA adapters (gitignored)
+├── checkpoint/                   # LoRA adapters (`lora_antibacterial/best` is tracked)
 ├── scripts/                      # checks, bench, submission verifier
 ├── runs/                         # run archives (gitignored)
 └── outputs/                      # bench / slurm logs (gitignored)
