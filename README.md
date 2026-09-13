@@ -29,6 +29,7 @@ Linux installs CUDA 12.6 PyTorch wheels by default. If the driver is newer or ol
 | `configs/train_lora.yaml` | LoRA on antibacterial peptides; best adapter in `checkpoint/lora_antibacterial/best` |
 | `configs/check_protgpt3.yaml` | Tokenizer / generation smoke |
 | `configs/bench_generate.yaml` | Speed / VRAM / reproducibility |
+| `configs/physchem_analysis.yaml` | AMP vs putative non-AMP physicochemical comparison |
 
 `extends: default.yaml` merges the parent. CLI `--config` and `--seed` override YAML.
 Each run writes `run.json` + `config.resolved.yaml` next to outputs and under `runs/<UTC>_<command>/`.
@@ -62,6 +63,15 @@ PYTHONPATH=src python3 scripts/eval_lora_generate.py
 
 Best adapter: `checkpoint/lora_antibacterial/best/` (see that folder’s README for specs, val curve, and EOS / copy-check). CSV stays gitignored under `data/raw/`.
 
+## Physicochemical analysis
+
+```bash
+uv sync --extra analysis
+PYTHONPATH=src python3 scripts/run_physchem_analysis.py --config physchem_analysis.yaml
+```
+
+Compares organizer AMP sequences to putative non-AMP UniProtKB negatives (unmatched and length-matched cohorts). Descriptor code lives in `src/amp_competition/features/` for reuse in conditional generation. Outputs go to `outputs/physchem/` (gitignored).
+
 ## Scripts
 
 See **[scripts/README.md](scripts/README.md)**.
@@ -78,7 +88,7 @@ See **[scripts/README.md](scripts/README.md)**.
 │   │   ├── sample.py             # mass library 8–50 AA
 │   │   └── lora.py               # LoRA on frozen base
 │   ├── data/                     # peptide CSV loader / split
-│   ├── features/
+│   ├── features/                 # physchem descriptors, cohorts, comparison
 │   ├── predictors/               # MIC / hemolysis (not wired yet)
 │   └── filters/
 ├── data/                         # raw / processed / external

@@ -1,0 +1,8 @@
+extends: default.yaml
+
+# AMP vs putative non-AMP physicochemical comparison.
+physchem:
+  amp_fasta: data/external/antibacterial.fasta
+  out_dir: outputs/physchem
+  downloaded_nonamp_fasta: null
+  unmatched_size: amp

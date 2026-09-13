@@ -42,6 +42,7 @@ data/external/*
 !data/external/.gitkeep
 !data/external/antibacterial.manifest.json
 !data/external/antibacterial.fasta
+data/external/uniprot_putative_nonamp_raw.fasta.gz
 
 # Notebooks / experiment clutter
 .ipynb_checkpoints/

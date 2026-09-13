@@ -13,6 +13,7 @@ Run from the repo root with `PYTHONPATH=src` (or `uv run python …` after `uv s
 | `bench_generate.py` | `configs/bench_generate.yaml` | Speed, VRAM, same-seed reproducibility |
 | `verify_submission.py` | — | Official AMP Challenge 2027 verifier |
 | `audit_fasta.py` | — | Audit a FASTA and write cleaned/rejected CSV files plus a JSON report |
+| `run_physchem_analysis.py` | `configs/physchem_analysis.yaml` | AMP vs putative non-AMP physicochemical comparison |
 
 ```bash
 PYTHONPATH=src python3 scripts/check_protgpt3.py --tokenizer-only
@@ -20,6 +21,8 @@ PYTHONPATH=src python3 scripts/check_lora.py
 PYTHONPATH=src python3 scripts/bench_generate.py
 uv run python scripts/verify_submission.py <github-url>
 uv run python scripts/audit_fasta.py
+uv sync --extra analysis
+PYTHONPATH=src python3 scripts/run_physchem_analysis.py --config physchem_analysis.yaml
 ```
 
 Audit the organizer reference after it has been fetched:

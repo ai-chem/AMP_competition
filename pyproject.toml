@@ -28,6 +28,9 @@ dev = [
 analysis = [
     "matplotlib>=3.9",
     "pandas>=2.2",
+    "peptides>=0.3",
+    "requests>=2.32",
+    "scipy>=1.15",
 ]
 
 [project.scripts]
