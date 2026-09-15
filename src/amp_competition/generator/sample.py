@@ -23,6 +23,29 @@ from amp_competition.generator.protgpt3 import (
 )
 from amp_competition.io import write_fasta
 
+def load_reference_fasta(path: Path) -> frozenset[str]:
+    """Fast loading of sequences from FASTA into a hash set in O(1)."""
+    if not path.is_file():
+        raise FileNotFoundError(f"Reference FASTA file not found: {path}")
+
+    sequences: set[str] = set()
+    current_seq: list[str] = []
+
+    with path.open("r", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            if line.startswith(">"):
+                if current_seq:
+                    sequences.add("".join(current_seq).upper())
+                    current_seq.clear()
+            else:
+                current_seq.append(line)
+        if current_seq:
+            sequences.add("".join(current_seq).upper())
+
+    return frozenset(sequences)
 
 def is_valid_peptide(
     sequence: str,
@@ -47,6 +70,7 @@ def generate_library(
     model,
     n_sequences: int,
     *,
+    reference_sequences: Set[str] | None = None,
     min_length: int = MIN_LENGTH,
     max_length: int = MAX_LENGTH,
     batch_size: int = 128,
@@ -75,6 +99,7 @@ def generate_library(
         "drawn": 0,
         "accepted": 0,
         "duplicates": 0,
+        "reference_matches": 0,
         "rejected": 0,
         "oom_retries": 0,
         "batch_size": batch_size,
@@ -121,6 +146,9 @@ def generate_library(
                     continue
                 if peptide in seen:
                     stats["duplicates"] += 1
+                    continue
+                if reference_sequences is not None and peptide in reference_sequences:
+                    stats["reference_matches"] += 1
                     continue
                 seen.add(peptide)
                 sequences.append(peptide)

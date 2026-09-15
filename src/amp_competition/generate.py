@@ -24,8 +24,9 @@ from amp_competition.config import (
 )
 from amp_competition.constants import LIBRARY_SIZE, MAX_LENGTH, MIN_LENGTH, TOP_SIZE
 from amp_competition.generator.protgpt3 import DIRECTION_N2C, load_from_config
-from amp_competition.generator.sample import generate_library, write_stats
+from amp_competition.generator.sample import generate_library, load_reference_fasta, write_stats
 from amp_competition.io import write_fasta
+from amp_competition.filters.similarity import select_top_novel
 
 
 def placeholder_score(sequences: list[str], seed: int = DEFAULT_SEED) -> list[float]:
@@ -39,6 +40,11 @@ def main() -> None:
     pre_args, _ = pre.parse_known_args()
     config = load_config(pre_args.config)
     generation = config.get("generation", {})
+
+    default_ref = generation.get("reference", "data/external/antibacterial.fasta")
+    ref_path = Path(default_ref)
+    if not ref_path.is_absolute():
+        ref_path = REPO_ROOT / ref_path
 
     parser = argparse.ArgumentParser(description="Generate AMP Challenge FASTA outputs.")
     parser.add_argument("--config", default=pre_args.config, help="YAML in configs/ or a path")
@@ -54,6 +60,11 @@ def main() -> None:
     parser.add_argument("--temperature", type=float, default=float(generation.get("temperature", 0.8)))
     parser.add_argument("--top-p", type=float, default=float(generation.get("top_p", 0.9)))
     parser.add_argument("--seed", type=int, default=int(config.get("seed", DEFAULT_SEED)))
+    parser.add_argument(
+        "--reference",
+        type=Path,
+        default=ref_path,
+        help="Path to reference FASTA dataset to ensure novelty.")
     parser.add_argument(
         "--out-dir",
         type=Path,
@@ -89,6 +100,19 @@ def main() -> None:
         file=sys.stderr,
     )
 
+    reference_sequences: frozenset[str] = frozenset()
+    if args.reference.is_file():
+        reference_sequences = load_reference_fasta(args.reference)
+        print(
+            f"Loaded {len(reference_sequences)} reference sequences from {args.reference}",
+            file=sys.stderr,
+        )
+    else:
+        print(
+            f"WARNING: Reference dataset not found at {args.reference}. Exact match filter skipped!",
+            file=sys.stderr,
+        )
+
     status = "failed"
     stats: dict = {}
     try:
@@ -97,6 +121,7 @@ def main() -> None:
             tokenizer,
             model,
             args.n_sequences,
+            reference_sequences=reference_sequences,
             min_length=args.min_length,
             max_length=args.max_length,
             batch_size=args.batch_size,
@@ -116,8 +141,15 @@ def main() -> None:
 
         scores = placeholder_score(sequences, seed=args.seed)
         ranked = sorted(zip(scores, sequences, strict=True), key=lambda item: item[0], reverse=True)
-        top_sequences = [sequence for _, sequence in ranked[: args.top_k]]
 
+        top_sequences, top_filter_stats = select_top_novel(
+            ranked_candidates=ranked,
+            reference_sequences=reference_sequences,
+            top_k=args.top_k,
+            max_similarity=0.80
+        )
+        print(f"Top-K novelty filtering stats: {top_filter_stats}", file=sys.stderr)
+    
         top_path = out_dir / "top.fasta"
         write_fasta(top_sequences, top_path)
         print(

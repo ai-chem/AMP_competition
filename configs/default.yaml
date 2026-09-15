@@ -19,6 +19,7 @@ generation:
   top_p: 0.9
   prompt: "1"
   checkpoint_every: 10000
+  reference: data/external/antibacterial.fasta
 
 lora:
   r: 16
