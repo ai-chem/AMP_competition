@@ -21,6 +21,26 @@ generate/run.json
 generate/config.resolved.yaml
 generate/length_histogram.png
 
+# Models & predictions
+!models/.gitkeep
+
+# Processed binary/feature dumps (ESM-2 embeddings, etc.)
+data/processed/*.npy
+data/processed/*.npz
+!data/processed/.gitkeep
+*pkl
+
+# Local envs & overrides
+.env
+*.local.yaml
+*.local.json
+
+# Runtime logs & background outputs
+*.log
+logs/
+nohup.out
+.pytest_cache/
+
 # Large model artifacts — keep directory structure, not weights
 checkpoint/*
 !checkpoint/.gitkeep
