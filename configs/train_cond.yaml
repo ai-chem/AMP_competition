@@ -1,0 +1,26 @@
+extends: default.yaml
+
+# V2: continue AMP-LoRA V1 with soft-prompt charge / hydrophobicity conditioning.
+data:
+  csv: data/raw/antibacterial_clean.csv
+  split: checkpoint/lora_antibacterial/split.json
+  val_fraction: 0.1
+
+v1:
+  adapter: checkpoint/lora_antibacterial/best
+
+condition:
+  # Dummy ids after <|bos|> 1; embeddings replaced by MLP via embed hook.
+  n_tokens: 4
+  mlp_hidden: 128
+
+train:
+  lr: 0.0001
+  epochs: 3
+  batch_size: 64
+  dropout: 0.05
+  weight_decay: 0.01
+  warmup_ratio: 0.05
+  max_grad_norm: 1.0
+  patience: 2
+  save_dir: checkpoint/lora_cond_v2

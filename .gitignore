@@ -48,10 +48,14 @@ checkpoint/*
 !checkpoint/.gitkeep
 !checkpoint/lora_antibacterial/
 checkpoint/lora_antibacterial/last/
+!checkpoint/lora_cond_v2/
+checkpoint/lora_cond_v2/last/
 *.safetensors
 !checkpoint/lora_antibacterial/best/adapter_model.safetensors
+!checkpoint/lora_cond_v2/best/adapter_model.safetensors
 *.bin
 *.pt
+!checkpoint/lora_cond_v2/best/conditioner.pt
 *.ckpt
 *.h5
 

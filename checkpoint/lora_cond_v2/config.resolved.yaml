@@ -1,0 +1,46 @@
+seed: 42
+deterministic: true
+model:
+  id: AI4PD/ProtGPT3-1.3B
+  dtype: bfloat16
+  trust_remote_code: true
+generation:
+  n_sequences: 100000
+  top_k: 100
+  min_length: 8
+  max_length: 50
+  batch_size: 256
+  temperature: 0.8
+  top_p: 0.9
+  prompt: '1'
+  checkpoint_every: 10000
+  reference: data/external/antibacterial.fasta
+lora:
+  r: 16
+  lora_alpha: 32
+  lora_dropout: 0.05
+  target_modules:
+  - q_proj
+  - k_proj
+  - v_proj
+  - o_proj
+train:
+  lr: 0.0001
+  steps: 8
+  batch_size: 64
+  dropout: 0.05
+  epochs: 3
+  weight_decay: 0.01
+  warmup_ratio: 0.05
+  max_grad_norm: 1.0
+  patience: 2
+  save_dir: /nfs/home/igolovkin/AMP_competition/checkpoint/lora_cond_v2
+data:
+  csv: /nfs/home/igolovkin/AMP_competition/data/raw/antibacterial_clean.csv
+  split: /nfs/home/igolovkin/AMP_competition/checkpoint/lora_antibacterial/split.json
+  val_fraction: 0.1
+v1:
+  adapter: /nfs/home/igolovkin/AMP_competition/checkpoint/lora_antibacterial/best
+condition:
+  n_tokens: 4
+  mlp_hidden: 128

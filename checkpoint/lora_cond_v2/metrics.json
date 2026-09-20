@@ -1,0 +1,70 @@
+{
+  "best_val_loss": 1.9760312203515935,
+  "epochs_ran": 3,
+  "steps": 1665,
+  "elapsed_sec": 422.26,
+  "n_train": 35498,
+  "n_val": 3950,
+  "data_stats": {
+    "source": "split",
+    "split": "/nfs/home/igolovkin/AMP_competition/checkpoint/lora_antibacterial/split.json",
+    "n_train": 35498,
+    "n_val": 3950
+  },
+  "lora_params": 1810432,
+  "mlp_params": 528768,
+  "history": [
+    {
+      "epoch": 1,
+      "step": 555,
+      "train_loss": 2.137705,
+      "val_loss": 2.053291,
+      "lr": 7.959772471883928e-05,
+      "best": true
+    },
+    {
+      "epoch": 2,
+      "step": 1110,
+      "train_loss": 1.970681,
+      "val_loss": 1.990766,
+      "lr": 2.7415561064551153e-05,
+      "best": true
+    },
+    {
+      "epoch": 3,
+      "step": 1665,
+      "train_loss": 1.921886,
+      "val_loss": 1.976031,
+      "lr": 0.0,
+      "best": true
+    }
+  ],
+  "normalizer": {
+    "names": [
+      "charge_pH7_4",
+      "hydrophobicity_interfaceScale_pH8"
+    ],
+    "mean": [
+      2.7800086039910497,
+      -0.12083702935759078
+    ],
+    "std": [
+      3.2965406158691257,
+      0.22846370123720838
+    ],
+    "p10": [
+      -1.0049492556398827,
+      -0.3892307692307692
+    ],
+    "p50": [
+      2.8489463420032477,
+      -0.10111111111111108
+    ],
+    "p90": [
+      6.989720936439522,
+      0.12555555555555556
+    ]
+  },
+  "best_dir": "/nfs/home/igolovkin/AMP_competition/checkpoint/lora_cond_v2/best",
+  "last_dir": "/nfs/home/igolovkin/AMP_competition/checkpoint/lora_cond_v2/last"
+}

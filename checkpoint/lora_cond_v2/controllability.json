@@ -1,0 +1,141 @@
+{
+  "checkpoint": "/nfs/home/igolovkin/AMP_competition/checkpoint/lora_cond_v2/best",
+  "normalizer": {
+    "names": [
+      "charge_pH7_4",
+      "hydrophobicity_interfaceScale_pH8"
+    ],
+    "mean": [
+      2.7800086039910497,
+      -0.12083702935759078
+    ],
+    "std": [
+      3.2965406158691257,
+      0.22846370123720838
+    ],
+    "p10": [
+      -1.0049492556398827,
+      -0.3892307692307692
+    ],
+    "p50": [
+      2.8489463420032477,
+      -0.10111111111111108
+    ],
+    "p90": [
+      6.989720936439522,
+      0.12555555555555556
+    ]
+  },
+  "n_per_target": 64,
+  "pearson_charge": 0.8560377570433427,
+  "pearson_hydrophobicity": 0.891701370384802,
+  "charge_high_gt_low": true,
+  "hydrophobicity_high_gt_low": true,
+  "targets": [
+    {
+      "name": "lowQ_lowH",
+      "target_charge": -1.0049492556398827,
+      "target_hydrophobicity": -0.3892307692307692,
+      "n_valid": 63,
+      "mean_charge": -0.5855382674796583,
+      "mean_hydrophobicity": -0.42357864821987634,
+      "delta_charge": 0.4194109881602244,
+      "delta_hydrophobicity": -0.03434787898910713,
+      "length_mean": 12.761904761904763,
+      "examples": [
+        "RCDPGWDFSRC",
+        "FWDLLNGLLSLGK",
+        "GWQWDLWDWVLW",
+        "LYLSAYYSLP",
+        "SWLRDIWDWICTVLTDFKTWLQTKLDQLLSYAAPT",
+        "LPLLLLFLLL",
+        "WWGDILSGVASLV",
+        "ILYLIIIII"
+      ]
+    },
+    {
+      "name": "lowQ_highH",
+      "target_charge": -1.0049492556398827,
+      "target_hydrophobicity": 0.12555555555555556,
+      "n_valid": 64,
+      "mean_charge": -1.014679753228008,
+      "mean_hydrophobicity": 0.17013582683503878,
+      "delta_charge": -0.009730497588125386,
+      "delta_hydrophobicity": 0.04458027127948322,
+      "length_mean": 22.640625,
+      "examples": [
+        "STDALSKDKIEQSLSDAKEKIEQSKNVLEKL",
+        "ASASHLLVGDETRDHTVAT",
+        "AGGNSNENAPSPSHPPLSLD",
+        "PHPHHHSH",
+        "TVKEADINIIGDFVEVETSK",
+        "TQHAHNNCYPSPTTLQAFNQ",
+        "DEEKKEKKEKKEKKEKKEKKEKKEKK",
+        "QQLLELDEWNKKVDQ"
+      ]
+    },
+    {
+      "name": "meanQ_meanH",
+      "target_charge": 2.8489463420032477,
+      "target_hydrophobicity": -0.10111111111111108,
+      "n_valid": 64,
+      "mean_charge": 3.128076887233762,
+      "mean_hydrophobicity": -0.10878515228306848,
+      "delta_charge": 0.2791305452305144,
+      "delta_hydrophobicity": -0.007674041171957399,
+      "length_mean": 18.6875,
+      "examples": [
+        "AVALIAKLAAKLAKNAVKA",
+        "GLASILKGAAKFAGKGLANNLLKQLSCKIAKC",
+        "GLFSVLGKVLGGVAKVAGKGLGKALGKLFAKVDC",
+        "GIFSTIKDTAKKLFGQILNTVKQ",
+        "IAAIKAAAALLPKLAAKLAK",
+        "FLGALFKAASKIFPSVFCAISKKC",
+        "FLPIAAKVLSGLL",
+        "ILGPVLGLVGNALGGLLKKI"
+      ]
+    },
+    {
+      "name": "highQ_lowH",
+      "target_charge": 6.989720936439522,
+      "target_hydrophobicity": -0.3892307692307692,
+      "n_valid": 64,
+      "mean_charge": 7.176303254097646,
+      "mean_hydrophobicity": -0.3664348319086188,
+      "delta_charge": 0.18658231765812427,
+      "delta_hydrophobicity": 0.022795937322150406,
+      "length_mean": 15.140625,
+      "examples": [
+        "KKFKKLFKKFLK",
+        "IKRLKKWLKKLLKK",
+        "FFRKKFKRFVKKLL",
+        "WLKKLRKLGKRLK",
+        "FFKAWKKGAKKFAKKFF",
+        "FKFFKKIFKKIFKKIFKKIFKKIFKKI",
+        "RRWRIVVIRVRR",
+        "KKKKKKKLLFFFFFF"
+      ]
+    },
+    {
+      "name": "highQ_highH",
+      "target_charge": 6.989720936439522,
+      "target_hydrophobicity": 0.12555555555555556,
+      "n_valid": 64,
+      "mean_charge": 8.980618386929054,
+      "mean_hydrophobicity": 0.07691150167302162,
+      "delta_charge": 1.9908974504895323,
+      "delta_hydrophobicity": -0.04864405388253394,
+      "length_mean": 25.78125,
+      "examples": [
+        "NKTKARKSSASGKKPRKAAAAKKKK",
+        "AVRLRVRVAVIRA",
+        "KIIKKIIKKIIKKIIKKIIKK",
+        "IKELKEKIKELKEKIKELKEKIKELKEKIKELKELIK",
+        "GIAKKIAKKIAKKIAKKIAKK",
+        "PAPVKPAVPSGRPPRRRR",
+        "RFRPPIRRPPIRPPFYPPFRPPFRPPFRPPFRPPFRPPFRPPFRPPF",
+        "RKIQRIIKEIEAYYRRA"
+      ]
+    }
+  ]
+}
