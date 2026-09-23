@@ -28,9 +28,6 @@ generate/length_histogram.png
 data/processed/*.npy
 data/processed/*.npz
 !data/processed/.gitkeep
-*pkl
-models/**/*.csv
-models/**/*.txt
 
 # Local envs & overrides
 .env
