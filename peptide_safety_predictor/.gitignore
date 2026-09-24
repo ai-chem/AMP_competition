@@ -1,0 +1,17 @@
+# Raw/interim artifacts are reproducible from scripts/download_data.py + prepare_data.py
+data/raw/**
+!data/raw/.gitkeep
+!data/raw/MANIFEST.json
+data/interim/**
+!data/interim/.gitkeep
+!data/interim/embeddings/.gitkeep
+data/processed/*.parquet
+data/processed/*.npz
+
+# Trained weights: keep the final bundle, drop scratch checkpoints
+models/scratch/
+models/final/*.pt
+models/final/*.bin
+
+# External repos cloned at pinned SHAs by download_data.py
+external/_clones/
