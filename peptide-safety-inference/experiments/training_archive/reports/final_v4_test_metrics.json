@@ -1,0 +1,105 @@
+{
+  "protocol": {
+    "selection": "blend catboost=0.60+extratrees=0.40+tobit=0.00 on physchem+esm2",
+    "oof_blend_pearson": 0.3569141590985105,
+    "best_single": "catboost",
+    "n_train": 6052,
+    "n_test": 896,
+    "n_test_exact": 338,
+    "locked_split_seed": 20260925,
+    "note": "Boosters/SVR exact-only; Tobit uses all censoring; weights from OOF."
+  },
+  "regression_exact": {
+    "n": 338.0,
+    "mae": 1.168170631431527,
+    "rmse": 1.6591286288392288,
+    "r2": 0.10008715125797107,
+    "pearson_r": 0.31718679372045394,
+    "spearman_rho": 0.3201816047390884
+  },
+  "pearson_cluster_bootstrap_mean_lo_hi": [
+    0.3151002027986184,
+    0.1842375527201672,
+    0.4256729491458474
+  ],
+  "classification_safe": {
+    "n": 602.0,
+    "roc_auc": 0.8008580065795323,
+    "pr_auc": 0.7978598969939399,
+    "mcc": 0.43662967707219635,
+    "balanced_accuracy": 0.7105783764559438,
+    "brier": 0.2083246579818397
+  },
+  "interval_coverage_90": 0.9319526627218935,
+  "right_censored_consistency": 0.3185328185328185,
+  "tobit_oof_censored_nll": 1.252646642728512,
+  "calibrator": "isotonic",
+  "conformal_q": 2.9715322830977726,
+  "blend_weights": {
+    "catboost": 0.6000000000000001,
+    "extratrees": 0.3999999999999999,
+    "tobit": 0.0
+  },
+  "oof_selection": [
+    {
+      "model": "catboost",
+      "features": "physchem+esm2",
+      "n": 2323.0,
+      "mae": 1.3455180722260127,
+      "rmse": 1.8001742576322481,
+      "r2": 0.09165558783204908,
+      "pearson_r": 0.35190692427336895,
+      "spearman_rho": 0.38126004444365974
+    },
+    {
+      "model": "extratrees",
+      "features": "physchem+esm2",
+      "n": 2323.0,
+      "mae": 1.3421529449697442,
+      "rmse": 1.8101090083217506,
+      "r2": 0.08160203171864411,
+      "pearson_r": 0.3354807320247022,
+      "spearman_rho": 0.37773014464699084
+    },
+    {
+      "model": "svr",
+      "features": "physchem+esm2",
+      "n": 2323.0,
+      "mae": 1.4039515347491598,
+      "rmse": 1.8386073607680822,
+      "r2": 0.052455873838374245,
+      "pearson_r": 0.3272785546211212,
+      "spearman_rho": 0.34689160404053276
+    },
+    {
+      "model": "xgboost",
+      "features": "physchem+esm2",
+      "n": 2323.0,
+      "mae": 1.352889535711061,
+      "rmse": 1.823776353148765,
+      "r2": 0.06768082670961018,
+      "pearson_r": 0.31634533833735035,
+      "spearman_rho": 0.3507440595478859
+    },
+    {
+      "model": "lightgbm",
+      "features": "physchem+esm2",
+      "n": 2323.0,
+      "mae": 1.3829552248373693,
+      "rmse": 1.8489414476414017,
+      "r2": 0.04177439608511124,
+      "pearson_r": 0.28447514234549215,
+      "spearman_rho": 0.32667660840862384
+    },
+    {
+      "model": "tobit_pca64",
+      "features": "physchem+esm2",
+      "n": 2323.0,
+      "mae": 1.9427046999669997,
+      "rmse": 2.5589931220746154,
+      "r2": -0.8355224136936708,
+      "pearson_r": 0.2225160220530677,
+      "spearman_rho": 0.24924595629630705
+    }
+  ]
+}

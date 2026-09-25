@@ -1,0 +1,15 @@
+{
+  "n_sequences": 6948,
+  "val_early_stop": {
+    "n": 247.0,
+    "mae": 1.301785850785288,
+    "rmse": 1.7258344201683071,
+    "r2": -0.48588579533109355,
+    "pearson_r": 0.4546497167630317,
+    "spearman_rho": 0.4792090983693379
+  },
+  "calibrator": "isotonic",
+  "conformal_q": 2.576813433975349,
+  "checkpoint": "C:\\Users\\m19er\\AMP_competition\\peptide_safety_predictor\\models\\final\\esm2_35M_ft.pt",
+  "bundle": "C:\\Users\\m19er\\AMP_competition\\peptide_safety_predictor\\models\\final\\hc50_bundle.pkl"
+}

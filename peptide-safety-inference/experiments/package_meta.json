@@ -1,0 +1,11 @@
+{
+  "inference_root": "C:\\Users\\m19er\\AMP_competition\\peptide-safety-inference",
+  "experiments": "C:\\Users\\m19er\\AMP_competition\\peptide-safety-inference\\experiments",
+  "archive": "C:\\Users\\m19er\\AMP_competition\\peptide-safety-inference\\experiments\\training_archive",
+  "final_models": [
+    "esm2_35M_ft.pt",
+    "hc50_bundle.pkl",
+    "solubility_aqueous_pooled.pkl",
+    "stability_peplife2_protease.pkl"
+  ]
+}

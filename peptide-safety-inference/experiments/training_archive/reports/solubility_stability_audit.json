@@ -1,0 +1,79 @@
+{
+  "solubility": {
+    "status": "ok",
+    "path": "C:\\Users\\m19er\\AMP_competition\\peptide_safety_predictor\\models\\final\\solubility_ecoli_rf.pkl",
+    "n": 462,
+    "n_clusters": 437,
+    "cv_roc_auc": 0.7751738057860507,
+    "cv_pr_auc": 0.9237764575488896,
+    "endpoint": "soluble heterologous expression in E. coli (PeptideBERT / peptide-dashboard labels). NOT experimentally calibrated aqueous solubility.",
+    "column_name": "solubility_ecoli_probability"
+  },
+  "stability": {
+    "status": "ok",
+    "default_assay": "plasma",
+    "per_assay": {
+      "plasma": {
+        "status": "ok",
+        "path": "C:\\Users\\m19er\\AMP_competition\\peptide_safety_predictor\\models\\final\\stability_peplife2_plasma.pkl",
+        "n": 378,
+        "n_clusters": 178,
+        "cv_r2": 0.001090824197802709,
+        "cv_pearson": 0.2726592134113465,
+        "column_name": "stability_log_half_life_plasma"
+      },
+      "other": {
+        "status": "ok",
+        "path": "C:\\Users\\m19er\\AMP_competition\\peptide_safety_predictor\\models\\final\\stability_peplife2_other.pkl",
+        "n": 185,
+        "n_clusters": 106,
+        "cv_r2": -0.1309349488307361,
+        "cv_pearson": 0.16169927697350917,
+        "column_name": "stability_log_half_life_other"
+      },
+      "protease": {
+        "status": "ok",
+        "path": "C:\\Users\\m19er\\AMP_competition\\peptide_safety_predictor\\models\\final\\stability_peplife2_protease.pkl",
+        "n": 389,
+        "n_clusters": 198,
+        "cv_r2": 0.16929752225733918,
+        "cv_pearson": 0.5122618203244325,
+        "column_name": "stability_log_half_life_protease"
+      },
+      "serum": {
+        "status": "ok",
+        "path": "C:\\Users\\m19er\\AMP_competition\\peptide_safety_predictor\\models\\final\\stability_peplife2_serum.pkl",
+        "n": 138,
+        "n_clusters": 86,
+        "cv_r2": -0.2551771850900053,
+        "cv_pearson": 0.12155195542503319,
+        "column_name": "stability_log_half_life_serum"
+      },
+      "blood": {
+        "status": "ok",
+        "path": "C:\\Users\\m19er\\AMP_competition\\peptide_safety_predictor\\models\\final\\stability_peplife2_blood.pkl",
+        "n": 40,
+        "n_clusters": 37,
+        "cv_r2": -0.24001317211871132,
+        "cv_pearson": 0.14569326168264182,
+        "column_name": "stability_log_half_life_blood"
+      },
+      "pooled": {
+        "status": "ok",
+        "path": "C:\\Users\\m19er\\AMP_competition\\peptide_safety_predictor\\models\\final\\stability_peplife2_pooled.pkl",
+        "n": 1025,
+        "n_clusters": 495,
+        "cv_r2": 0.4703558544383344,
+        "cv_pearson": 0.6897036294684314,
+        "column_name": "stability_log_half_life_pooled"
+      }
+    },
+    "n_parsed_total": 2460,
+    "endpoint_note": "Half-life depends strongly on assay (plasma vs intestinal protease). Default inference uses the plasma head when available."
+  },
+  "disclaimer": [
+    "Solubility = E. coli soluble expression, NOT aqueous solubility.",
+    "Stability half-life is assay-specific; do not mix plasma and protease.",
+    "Right-censored half-lives are never rewritten as the threshold."
+  ]
+}

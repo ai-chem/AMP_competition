@@ -1,0 +1,21 @@
+model: esm2_35M_ft
+features: esm2_t12_35M_finetune
+version: production_full_data
+checkpoint: models/esm2_35M_ft.pt
+n_train_sequences: 6948
+selection_locked_test:
+  note: Metrics below are from selection-phase (train-only) eval; not re-scored after
+    full-data refit.
+  pearson: 0.317
+  spearman: 0.383
+  roc_auc: 0.837
+  right_censored_consistency: 0.807
+  coverage_90: 0.926
+aqueous_solubility:
+  source: SolPepBench / PepSol2000
+  default_model: solubility_aqueous_pooled.pkl
+  cv_roc_auc_pooled: 0.785
+  note: NOT E. coli expression
+stability:
+  source: PEPlife2
+  default_model: stability_peplife2_protease.pkl

@@ -1,0 +1,5 @@
+solvent_model,n,n_clusters,cv_roc_auc,cv_pr_auc,endpoint
+ultrapure_water,1326,1191,0.7818772498935921,0.823127907100938,Experimental peptide solubility in aqueous / buffer solvent (Ultrapure water). Binary soluble/insoluble from SolPepBench (PepSol2000). NOT E. coli expression. NOT continuous mg/mL calibration.
+01_m_pbs,635,534,0.773085552047968,0.7378926931297359,Experimental peptide solubility in aqueous / buffer solvent (0.1 M PBS). Binary soluble/insoluble from SolPepBench (PepSol2000). NOT E. coli expression. NOT continuous mg/mL calibration.
+1x_dpbs,667,639,0.7792349726775956,0.6231349727209479,Experimental peptide solubility in aqueous / buffer solvent (1X DPBS). Binary soluble/insoluble from SolPepBench (PepSol2000). NOT E. coli expression. NOT continuous mg/mL calibration.
+pooled,2664,1197,0.7852093117774566,0.7661345600559518,"Experimental peptide solubility in aqueous / buffer solvent (pooled: 0.1 M PBS, 1X DPBS, Saline, Ultrapure water). Binary soluble/insoluble from SolPepBench (PepSol2000). NOT E. coli expression. NOT continuous mg/mL calibration."

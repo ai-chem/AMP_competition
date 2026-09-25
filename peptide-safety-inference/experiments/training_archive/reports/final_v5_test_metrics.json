@@ -1,0 +1,42 @@
+{
+  "protocol": {
+    "selection": "blend catboost=0.70+extratrees=0.15+tobit=0.15; constraints tobit>=0.15 OOF_rc>=0.5",
+    "oof_blend_pearson": 0.3452844423610447,
+    "oof_rc_consistency": 0.5079410915391279,
+    "n_train": 6052,
+    "n_test": 896,
+    "n_test_exact": 338,
+    "locked_split_seed": 20260925
+  },
+  "regression_exact": {
+    "n": 338.0,
+    "mae": 1.1697419424423758,
+    "rmse": 1.6759059033308927,
+    "r2": 0.08179511375142035,
+    "pearson_r": 0.30161634308210433,
+    "spearman_rho": 0.3204199910796756
+  },
+  "pearson_cluster_bootstrap_mean_lo_hi": [
+    0.30061117721882424,
+    0.17842071293952022,
+    0.41213040996096145
+  ],
+  "classification_safe": {
+    "n": 602.0,
+    "roc_auc": 0.803025251178092,
+    "pr_auc": 0.7968799868695483,
+    "mcc": 0.4314712930287729,
+    "balanced_accuracy": 0.7131012714501646,
+    "brier": 0.1996741629238804
+  },
+  "interval_coverage_90": 0.9319526627218935,
+  "right_censored_consistency": 0.40733590733590735,
+  "tobit_oof_censored_nll": 1.252646642728512,
+  "calibrator": "isotonic",
+  "conformal_q": 3.036940051320339,
+  "blend_weights": {
+    "catboost": 0.7000000000000001,
+    "extratrees": 0.14999999999999997,
+    "tobit": 0.14999999999999997
+  }
+}

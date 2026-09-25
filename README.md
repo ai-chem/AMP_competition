@@ -76,6 +76,11 @@ Compares organizer AMP sequences to putative non-AMP UniProtKB negatives (unmatc
 
 See **[scripts/README.md](scripts/README.md)**.
 
+## Peptide safety predictor
+
+Standalone inference package: [`peptide-safety-inference/`](peptide-safety-inference/)
+(HC50 + aqueous solubility + protease half-life). See that folder’s README.
+
 ## Layout
 
 ```
@@ -91,6 +96,7 @@ See **[scripts/README.md](scripts/README.md)**.
 │   ├── features/                 # physchem descriptors, cohorts, comparison
 │   ├── predictors/               # MIC / hemolysis (not wired yet)
 │   └── filters/
+├── peptide-safety-inference/     # final HC50 / solubility / stability predictor
 ├── data/                         # raw / processed / external
 ├── generate/                     # library.fasta (gitignored)
 ├── checkpoint/                   # LoRA adapters (`lora_antibacterial/best` is tracked)

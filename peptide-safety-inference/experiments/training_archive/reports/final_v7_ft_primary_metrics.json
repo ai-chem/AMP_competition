@@ -1,0 +1,32 @@
+{
+  "protocol": {
+    "selection": "esm2_35M_ft primary (val pearson 0.398 > catboost OOF 0.352)",
+    "ft_val_pearson": 0.397548,
+    "catboost_oof_pearson": 0.352,
+    "n_train": 6052,
+    "n_test": 896,
+    "n_test_exact": 338,
+    "locked_split_seed": 20260925,
+    "note": "Regressor = ESM-2 35M fine-tune with censored Gaussian head. Classifier/calibrator from v5 physchem+ESM ExtraTrees. Chosen on validation before locked test."
+  },
+  "regression_exact": {
+    "n": 338.0,
+    "mae": 1.3091563915647615,
+    "rmse": 1.8657916530211227,
+    "r2": -0.13806385339738925,
+    "pearson_r": 0.3170647906529962,
+    "spearman_rho": 0.38326509517277557
+  },
+  "classification_safe": {
+    "n": 602.0,
+    "roc_auc": 0.8372566017604696,
+    "pr_auc": 0.8292820049171277,
+    "mcc": 0.544793472164562,
+    "balanced_accuracy": 0.772239263803681,
+    "brier": 0.16796972526884205
+  },
+  "interval_coverage_90": 0.9260355029585798,
+  "right_censored_consistency": 0.806949806949807,
+  "calibrator": "isotonic",
+  "conformal_q": 3.036940051320339
+}

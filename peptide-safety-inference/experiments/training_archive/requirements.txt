@@ -1,0 +1,36 @@
+# Python 3.11. Install with:
+#   uv venv --python 3.11 .venv
+#   uv pip install -r peptide_safety_predictor/requirements.txt
+#
+# Torch: CPU wheels by default. For the CUDA build used during training see
+# reports/environment.json ("torch_install_command").
+
+# --- core numerics ---
+numpy>=1.26,<3
+pandas>=2.2
+scipy>=1.11
+pyarrow>=15
+
+# --- classical ML ---
+scikit-learn>=1.4
+xgboost>=2.0
+lightgbm>=4.3
+catboost>=1.2
+
+# --- censored / survival regression ---
+lifelines>=0.28
+
+# --- sequence + chemistry ---
+biopython>=1.83
+rdkit>=2023.9
+Levenshtein>=0.25
+
+# --- protein language models ---
+torch>=2.2
+transformers>=4.40
+
+# --- plots / reports ---
+matplotlib>=3.8
+pyyaml>=6.0
+tqdm>=4.66
+requests>=2.31

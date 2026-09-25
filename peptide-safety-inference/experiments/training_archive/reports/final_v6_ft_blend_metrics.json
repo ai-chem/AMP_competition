@@ -1,0 +1,45 @@
+{
+  "protocol": {
+    "ft_val_pearson": 0.39754803170509395,
+    "v5_val_pearson": 0.9490304253048347,
+    "blend_ft_weight": 0.0,
+    "val_blend_pearson": 0.9490304253048347,
+    "locked_split_seed": 20260925,
+    "note": "FT weight from FT validation fold only; locked test once."
+  },
+  "locked_test_ft_only": {
+    "n": 338.0,
+    "mae": 1.3091563915647615,
+    "rmse": 1.8657916530211227,
+    "r2": -0.13806385339738925,
+    "pearson_r": 0.3170647906529962,
+    "spearman_rho": 0.38326509517277557
+  },
+  "locked_test_v5_only": {
+    "n": 338.0,
+    "mae": 1.1697419424423758,
+    "rmse": 1.6759059033308927,
+    "r2": 0.08179511375142035,
+    "pearson_r": 0.3016163430821044,
+    "spearman_rho": 0.3204199910796756
+  },
+  "locked_test_blend": {
+    "n": 338.0,
+    "mae": 1.1697419424423758,
+    "rmse": 1.6759059033308927,
+    "r2": 0.08179511375142035,
+    "pearson_r": 0.3016163430821044,
+    "spearman_rho": 0.3204199910796756
+  },
+  "ft_rc_consistency": 0.806949806949807,
+  "blend_rc_consistency": 0.40733590733590735,
+  "interval_coverage_90": 0.9349112426035503,
+  "classification_safe": {
+    "n": 602.0,
+    "roc_auc": 0.8051369254023295,
+    "pr_auc": 0.8003442739999669,
+    "mcc": 0.4400138340864161,
+    "balanced_accuracy": 0.7177024984440294,
+    "brier": 0.19829083899666985
+  }
+}

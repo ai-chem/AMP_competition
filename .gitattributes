@@ -1,0 +1,2 @@
+peptide-safety-inference/models/*.pt filter=lfs diff=lfs merge=lfs -text
+peptide-safety-inference/models/*.pkl filter=lfs diff=lfs merge=lfs -text

@@ -1,0 +1,67 @@
+{
+  "source": "SolPepBench / PepSol2000 (Ascaris-Equi/PepSol2000)",
+  "aqueous_solvents": [
+    "0.1 M PBS",
+    "1X DPBS",
+    "Saline",
+    "Ultrapure water"
+  ],
+  "default_inference": "solubility_aqueous_pooled.pkl conditioned on 0.1 M PBS",
+  "rejected_endpoint": "PeptideBERT E. coli soluble-expression labels are NOT used for solubility reporting (user requirement: aqueous/buffer only).",
+  "models": {
+    "ultrapure_water": {
+      "status": "ok",
+      "path": "C:\\Users\\m19er\\AMP_competition\\peptide_safety_predictor\\models\\final\\solubility_aqueous_ultrapure_water.pkl",
+      "name": "ultrapure_water",
+      "n": 1326,
+      "n_clusters": 1191,
+      "cv_roc_auc": 0.7818772498935921,
+      "cv_pr_auc": 0.823127907100938,
+      "endpoint": "Experimental peptide solubility in aqueous / buffer solvent (Ultrapure water). Binary soluble/insoluble from SolPepBench (PepSol2000). NOT E. coli expression. NOT continuous mg/mL calibration.",
+      "column_name": "solubility_aqueous_ultrapure_water_probability"
+    },
+    "01_m_pbs": {
+      "status": "ok",
+      "path": "C:\\Users\\m19er\\AMP_competition\\peptide_safety_predictor\\models\\final\\solubility_aqueous_01_m_pbs.pkl",
+      "name": "01_m_pbs",
+      "n": 635,
+      "n_clusters": 534,
+      "cv_roc_auc": 0.773085552047968,
+      "cv_pr_auc": 0.7378926931297359,
+      "endpoint": "Experimental peptide solubility in aqueous / buffer solvent (0.1 M PBS). Binary soluble/insoluble from SolPepBench (PepSol2000). NOT E. coli expression. NOT continuous mg/mL calibration.",
+      "column_name": "solubility_aqueous_01_m_pbs_probability"
+    },
+    "1x_dpbs": {
+      "status": "ok",
+      "path": "C:\\Users\\m19er\\AMP_competition\\peptide_safety_predictor\\models\\final\\solubility_aqueous_1x_dpbs.pkl",
+      "name": "1x_dpbs",
+      "n": 667,
+      "n_clusters": 639,
+      "cv_roc_auc": 0.7792349726775956,
+      "cv_pr_auc": 0.6231349727209479,
+      "endpoint": "Experimental peptide solubility in aqueous / buffer solvent (1X DPBS). Binary soluble/insoluble from SolPepBench (PepSol2000). NOT E. coli expression. NOT continuous mg/mL calibration.",
+      "column_name": "solubility_aqueous_1x_dpbs_probability"
+    },
+    "pooled": {
+      "status": "ok",
+      "path": "C:\\Users\\m19er\\AMP_competition\\peptide_safety_predictor\\models\\final\\solubility_aqueous_pooled.pkl",
+      "name": "pooled",
+      "n": 2664,
+      "n_clusters": 1197,
+      "cv_roc_auc": 0.7852093117774566,
+      "cv_pr_auc": 0.7661345600559518,
+      "endpoint": "Experimental peptide solubility in aqueous / buffer solvent (pooled: 0.1 M PBS, 1X DPBS, Saline, Ultrapure water). Binary soluble/insoluble from SolPepBench (PepSol2000). NOT E. coli expression. NOT continuous mg/mL calibration.",
+      "column_name": "solubility_aqueous_pooled_probability"
+    }
+  },
+  "official_sequence_disjoint": {
+    "status": "cannot_parse_split",
+    "values": [
+      "0"
+    ]
+  },
+  "disclaimer": [
+    "Labels are binary soluble/insoluble under the named solvent \u2014 not a continuous aqueous solubility in mg/mL.",
+    "Solvent matters: 839 sequences have discordant labels across solvents in the full PepSolBench table; we model condition explicitly."
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "n_observations": 14504,
+  "n_unique_sequences": 6948,
+  "n_clusters_70": 2034,
+  "n_clusters_80": 2839,
+  "n_train_seq": 6052,
+  "n_test_seq": 896,
+  "n_train_obs": 12504,
+  "n_test_obs": 2000,
+  "locked_split_seed": 20260925,
+  "repair_rounds": 1,
+  "max_train_test_identity": 0.696969696969697,
+  "n_violations_id70": 0,
+  "censor_train": {
+    "right": 7244,
+    "exact": 4311,
+    "left": 922,
+    "interval": 27
+  },
+  "censor_test": {
+    "right": 1173,
+    "exact": 677,
+    "left": 146,
+    "interval": 4
+  }
+}

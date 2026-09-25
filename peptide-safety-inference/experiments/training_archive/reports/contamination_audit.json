@@ -1,0 +1,28 @@
+{
+  "predictor": "HemoPI2",
+  "potentially_contaminated": true,
+  "reason": "HemoPI2 was trained on DBAASP+Hemolytik; our test is also DBAASP-derived",
+  "exact_sequence_overlap_with_hemopi2_curated": 289,
+  "exact_overlap_fraction": 0.6523702031602708,
+  "n_test": 443,
+  "note": "Do NOT interpret HemoPI2 locked-test metrics as independent generalization.",
+  "seen_vs_unseen": {
+    "seen_in_hemopi2_training": {
+      "n": 161,
+      "mae": 0.45575474674660443,
+      "rmse": 0.6745128076233364,
+      "r2": 0.8189147155365222,
+      "pearson_r": 0.914470116331989,
+      "spearman_rho": 0.9074841742510908
+    },
+    "unseen_by_hemopi2": {
+      "n": 111,
+      "mae": 1.4045036759352354,
+      "rmse": 1.836846083011366,
+      "r2": 0.030959214860839523,
+      "pearson_r": 0.26249061726708284,
+      "spearman_rho": 0.17395101986784256
+    },
+    "memorisation_gap_pearson": 0.6519794990649062
+  }
+}
