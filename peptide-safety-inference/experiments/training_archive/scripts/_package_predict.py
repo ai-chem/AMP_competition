@@ -66,9 +66,14 @@ def _resolve_device(device: str) -> torch.device:
 
 def _load_ft_head(bundle: dict, device: torch.device):
     model_name = bundle.get("embedding_model", ESM_DEFAULT)
-    ckpt_path = Path(bundle["esm_ft_ckpt"])
+    stored_ckpt_path = Path(bundle["esm_ft_ckpt"])
+    ckpt_path = (
+        stored_ckpt_path
+        if stored_ckpt_path.is_absolute()
+        else ROOT / stored_ckpt_path
+    )
     if not ckpt_path.is_file():
-        alt = FINAL_MODELS / "esm2_35M_ft.pt"
+        alt = FINAL_MODELS / stored_ckpt_path.name
         if alt.is_file():
             ckpt_path = alt
         else:

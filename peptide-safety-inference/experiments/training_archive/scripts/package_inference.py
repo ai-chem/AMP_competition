@@ -259,7 +259,7 @@ def main() -> None:
 
     with (DST / "models" / "hc50_bundle.pkl").open("rb") as f:
         bundle = pickle.load(f)
-    bundle["esm_ft_ckpt"] = str((DST / "models" / "esm2_35M_ft.pt").resolve())
+    bundle["esm_ft_ckpt"] = "models/esm2_35M_ft.pt"
     bundle["version"] = "production_full_data"
     with (DST / "models" / "hc50_bundle.pkl").open("wb") as f:
         pickle.dump(bundle, f)
