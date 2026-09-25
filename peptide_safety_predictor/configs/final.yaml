@@ -1,13 +1,13 @@
-selection:
-  regressor: svr
-  features: physchem
-  family: classical
-  val_pearson_mean: 0.43075715273353143
-  val_pearson_std: 0.01128038636614876
-  n_seeds: 5
-  reason: highest mean validation Pearson r among group-disjoint CV runs
-calibrator: platt
-embedding_model: facebook/esm2_t12_35M_UR50D
-hc50_safe_threshold_uM: 128.0
-n_seeds: 5
-locked_test_evaluated: true
+model: svr
+features: physchem+esm2
+seeds:
+- 0
+- 1
+- 2
+- 3
+- 4
+version: v2_expanded
+locked_test:
+  pearson: 0.3117332829375051
+  spearman: 0.3402130504288063
+  roc_auc: 0.795545478794345

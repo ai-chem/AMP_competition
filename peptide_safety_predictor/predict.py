@@ -156,32 +156,59 @@ def predict_hc50(sequences: list[str], bundle: dict, device: str = "auto") -> pd
 
 
 def maybe_solubility_model(sequences: list[str], out: pd.DataFrame) -> pd.DataFrame:
-    path = FINAL_MODELS / "solubility_proxy_rf.pkl"
-    if not path.exists():
+    # Prefer the measured-endpoint PeptideBERT model; fall back to older proxy.
+    for path in (
+        FINAL_MODELS / "solubility_ecoli_rf.pkl",
+        FINAL_MODELS / "solubility_proxy_rf.pkl",
+    ):
+        if not path.exists():
+            continue
+        with path.open("rb") as f:
+            bundle = pickle.load(f)
+        feats = featurize_frame(sequences)
+        cols = bundle["feature_cols"]
+        for c in cols:
+            if c not in feats.columns:
+                feats[c] = 0.0
+        X = np.nan_to_num(feats[cols].to_numpy(dtype=float))
+        proba = bundle["model"].predict_proba(X)[:, 1]
+        out["solubility_ecoli_probability"] = proba
+        out["solubility_proxy_probability"] = proba  # alias for older consumers
+        out["solubility_endpoint"] = bundle.get(
+            "endpoint",
+            "E. coli soluble heterologous expression (NOT aqueous solubility)",
+        )
         return out
-    with path.open("rb") as f:
-        bundle = pickle.load(f)
-    feats = featurize_frame(sequences)
-    X = np.nan_to_num(feats[bundle["feature_cols"]].to_numpy(dtype=float))
-    proba = bundle["model"].predict_proba(X)[:, 1]
-    out["solubility_proxy_probability"] = proba
-    out["solubility_endpoint"] = bundle.get(
-        "endpoint", "E. coli soluble-expression proxy"
-    )
     return out
 
 
 def maybe_stability_model(sequences: list[str], out: pd.DataFrame) -> pd.DataFrame:
-    path = FINAL_MODELS / "stability_proxy_rf.pkl"
-    if not path.exists():
+    # Prefer protease assay (best CV among PEPlife2 heads), then pooled, then plasma.
+    preferred = [
+        FINAL_MODELS / "stability_peplife2_protease.pkl",
+        FINAL_MODELS / "stability_peplife2_pooled.pkl",
+        FINAL_MODELS / "stability_peplife2_plasma.pkl",
+        FINAL_MODELS / "stability_proxy_rf.pkl",
+    ]
+    for path in preferred:
+        if not path.exists():
+            continue
+        with path.open("rb") as f:
+            bundle = pickle.load(f)
+        feats = featurize_frame(sequences)
+        cols = bundle["feature_cols"]
+        for c in cols:
+            if c not in feats.columns:
+                feats[c] = 0.0
+        X = np.nan_to_num(feats[cols].to_numpy(dtype=float))
+        pred = bundle["model"].predict(X)
+        out["stability_log_half_life"] = pred
+        out["stability_half_life_hours"] = np.exp(pred)
+        out["stability_proxy_log_half_life"] = pred
+        out["stability_endpoint"] = bundle.get(
+            "endpoint", "PEPlife2 half-life (log hours)"
+        )
         return out
-    with path.open("rb") as f:
-        bundle = pickle.load(f)
-    feats = featurize_frame(sequences)
-    X = np.nan_to_num(feats[bundle["feature_cols"]].to_numpy(dtype=float))
-    pred = bundle["model"].predict(X)
-    out["stability_proxy_log_half_life"] = pred
-    out["stability_endpoint"] = bundle.get("endpoint", "mammalian blood half-life proxy")
     return out
 
 

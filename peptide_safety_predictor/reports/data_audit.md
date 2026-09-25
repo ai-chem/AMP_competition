@@ -1,32 +1,16 @@
-# Data audit — HC50 observations
+# Data audit — expanded HC50 observations
 
-- DBAASP activity rows extracted: **4579**
-- Usable (decision=ok): **3851**
-- Model-ready (AA20, in-domain chemistry): **2840**
-- Unique sequences: **2446**
-- Censoring: exact=1763, right=1044, left=15, interval=18
-- P(HC50>128) labels known: 2510 (positives=1271)
-- Sequences with multiple measurements: 226
-- Sequences with conflicting exact values (>2×): 89
-- Overlap with HemoPI2 curated unique sequences: 1589
-- Overlap with ConsAMPHemo regression: 1150
-- Source counts: {'DBAASP': 2840}
-
-## Processing decisions
-
-```
-{
-  "ok": 3851,
-  "unit_conversion_failed": 400,
-  "ugml_conversion_skipped_modified": 279,
-  "unparsable_concentration:unmatched": 49
-}
-```
+- All-decision rows: **24295**
+- Usable (decision=ok): **17053**
+- Model-ready (AA20): **14504** (6948 unique sequences)
+- Censoring: {'right': 8417, 'exact': 4988, 'left': 1068, 'interval': 31}
+- Sources: {'Hemolytik2': 9486, 'DBAASP': 3267, 'DBAASP_CSV': 1751}
+- Erythrocyte species: {'human': 10679, 'horse': 849, 'sheep': 669, 'mouse': 650, 'rat': 635, 'rabbit': 382, 'pig': 252, 'fish': 68, 'chicken': 56, 'guinea-pig': 54, 'porcine': 54, 'unknown_rbc': 29, 'murine': 27, 'cattle': 21, 'cow': 19, 'bovine': 19, 'canine': 13, 'nan': 7, 'dog': 6, 'lizard': 4, 'pigeons': 4, 'goat': 3, 'swiss mouse': 2, 'hagfish': 1, 'mus musculus': 1}
+- P(HC50>128) known: 8932 (positives=4398)
+- Multi-measurement sequences: 3067; conflicts (>2x exact): 388
 
 ## Notes
 
-- Conflicting duplicate measurements are **retained** (not averaged).
-- HemoPI2 / ConsAMPHemo curated sets are secondary/cross-check sources;
-  their authors collapsed ranges/censoring, so DBAASP raw records are preferred
-  whenever available.
-- µg/mL → µM conversion applied only for canonical linear unmodified peptides.
+- Conflicts retained. No averaging.
+- ConsAMPHemo regression targets excluded (collapsed censoring).
+- HemoPI2 secondary only.

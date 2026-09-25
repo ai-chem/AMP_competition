@@ -65,13 +65,17 @@ def main() -> None:
     prim["cluster_id80"] = prim["sequence"].map(assign80)
     print(f"Clusters @80%: {prim['cluster_id80'].nunique()}")
 
-    # Locked split on 70% clusters
+    # Locked split on 70% clusters.
+    # Seed CHANGED from 42 -> 20260925 because the previous locked test was
+    # observed three times during the first study; a new independent test is
+    # required for the expanded-data evaluation.
     prim["cluster_id"] = prim["cluster_id70"]
+    LOCKED_SPLIT_SEED = 20260925
     prim["split"] = assign_locked_split(
         prim,
         cluster_col="cluster_id",
         test_fraction=0.18,
-        seed=42,
+        seed=LOCKED_SPLIT_SEED,
         stratify_cols=["censor_flag", "hc50_band"],
     )
 
@@ -143,6 +147,45 @@ def main() -> None:
     audit = pd.DataFrame(nearest)
     audit.to_csv(REPORTS / "split_audit.csv", index=False)
 
+    # Safety valve: if the k-mer candidate filter missed a pair, move the
+    # offending test cluster(s) into train and re-audit until clean. This
+    # preserves the structural guarantee without a full O(n^2) clustering.
+    repair_rounds = 0
+    while violations and repair_rounds < 5:
+        repair_rounds += 1
+        print(f"Repair round {repair_rounds}: moving {violations} leaking test clusters to train...")
+        bad_seqs = set(audit.loc[audit["violation_id70"], "test_sequence"])
+        bad_clusters = set(prim.loc[prim["sequence"].isin(bad_seqs), "cluster_id70"])
+        prim.loc[prim["cluster_id70"].isin(bad_clusters), "split"] = "train"
+        split_map = prim.set_index("sequence")["split"].to_dict()
+        df["split"] = df["sequence"].map(split_map)
+        train_seqs = prim.loc[prim["split"] == "train", "sequence"].tolist()
+        test_prim = prim[prim["split"] == "test"].copy()
+        nearest = []
+        violations = 0
+        for _, row in test_prim.iterrows():
+            ident, cov, neigh = max_train_identity(row["sequence"], train_seqs)
+            flag = ident >= 0.70
+            if flag:
+                violations += 1
+            nearest.append(
+                {
+                    "test_sequence": row["sequence"],
+                    "nearest_train_sequence": neigh,
+                    "sequence_identity": ident,
+                    "alignment_coverage": cov,
+                    "violation_id70": flag,
+                }
+            )
+        audit = pd.DataFrame(nearest)
+        audit.to_csv(REPORTS / "split_audit.csv", index=False)
+        print(f"  after repair: test={len(test_prim)} violations={violations}")
+
+    # Re-save after possible repair
+    prim.to_csv(SPLITS / "sequence_primary_id70.csv", index=False)
+    df.to_parquet(PROCESSED / "hc50_observations_with_splits.parquet", index=False)
+    df.to_csv(SPLITS / "split_locked.csv", index=False)
+
     summary = {
         "n_observations": int(len(df)),
         "n_unique_sequences": int(prim["sequence"].nunique()),
@@ -152,6 +195,11 @@ def main() -> None:
         "n_test_seq": int((prim["split"] == "test").sum()),
         "n_train_obs": int((df["split"] == "train").sum()),
         "n_test_obs": int((df["split"] == "test").sum()),
+        "locked_split_seed": LOCKED_SPLIT_SEED,
+        "locked_split_note": (
+            "Seed 20260925 replaces seed 42. The previous locked test was "
+            "observed during the first study and is retired."
+        ),
         "max_train_test_identity": float(audit["sequence_identity"].max()) if len(audit) else None,
         "n_violations_id70": int(violations),
         "censor_train": df.loc[df["split"] == "train", "censor_type"].value_counts().to_dict(),

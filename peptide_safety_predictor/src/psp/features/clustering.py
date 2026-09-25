@@ -82,6 +82,11 @@ def candidate_pairs(
     floor, leaving the real accept/reject decision to the aligner. This avoids
     the full O(n^2) alignment cost; the independent audit in make_splits.py
     re-checks the resulting split all-vs-all.
+
+    Short peptides are a special case: two 4-mers at 75% identity (KFAK/KAAK)
+    share *no* 3-mers, so the inverted index alone would miss them. Any sequence
+    for which zero shared k-mers is still compatible with the identity threshold
+    is therefore also paired all-vs-all under the length gate.
     """
     kmers = [_kmer_set(s, k) for s in uniq]
     index: Dict[str, List[int]] = {}
@@ -89,6 +94,7 @@ def candidate_pairs(
         for m in km:
             index.setdefault(m, []).append(i)
 
+    seen: set[Tuple[int, int]] = set()
     for i in range(len(uniq)):
         shared: Dict[int, int] = {}
         for m in kmers[i]:
@@ -100,17 +106,33 @@ def candidate_pairs(
                 continue
             if n_shared < _min_shared_kmers(uniq[i], uniq[j], identity_threshold, k):
                 continue
+            seen.add((i, j))
             yield i, j
+
+    # Exhaustive length-gated pass for SHORT peptides only. Two 4-mers at 75%
+    # identity (KFAK/KAAK) share no 3-mers, so the inverted index alone misses
+    # them. Restricting to len <= 2*k keeps this O(n_short^2) and cheap.
+    short = [i for i, s in enumerate(uniq) if len(s) <= 2 * k]
+    for a in range(len(short)):
+        for b in range(a + 1, len(short)):
+            i, j = short[a], short[b]
+            if (i, j) in seen:
+                continue
+            if length_gate(uniq[i], uniq[j], identity_threshold):
+                yield i, j
 
 
 def _min_shared_kmers(a: str, b: str, identity_threshold: float, k: int) -> int:
     """Loose lower bound on shared k-mers for a pair at the identity cutoff.
 
     Each mismatch destroys at most k k-mers. Halved for safety margin, since
-    indels shift k-mer frames in ways this bound does not model.
+    indels shift k-mer frames in ways this bound does not model. Returns 0 when
+    the sequence is shorter than a k-mer (caller must not rely on the index).
     """
     lo = min(len(a), len(b))
     hi = max(len(a), len(b))
+    if lo < k:
+        return 0
     n_kmers = max(1, lo - k + 1)
     mismatches = (1.0 - identity_threshold) * hi
     return max(1, int(0.5 * (n_kmers - k * mismatches)))
@@ -120,6 +142,7 @@ def cluster_sequences(
     sequences: Sequence[str],
     identity_threshold: float = 0.70,
     coverage_threshold: float = 0.80,
+    k: int = 2,
 ) -> Dict[str, int]:
     """Single-linkage (connected-component) clustering for leakage control.
 
@@ -129,6 +152,9 @@ def cluster_sequences(
     exceed the threshold against any training sequence *by construction* --
     unlike greedy centroid clustering, where two mutually-similar sequences can
     join different centroids and leak across the split.
+
+    Default k-mer size is 2: with k=3, short peptides at 70-75% identity often
+    share no 3-mers (e.g. LRWLRWG / LKWLKWG) and leak across the split.
     """
     aligner = _aligner()
     uniq = list(dict.fromkeys(sequences))
@@ -146,7 +172,7 @@ def cluster_sequences(
         if ra != rb:
             parent[max(ra, rb)] = min(ra, rb)
 
-    pairs = list(candidate_pairs(uniq, identity_threshold))
+    pairs = list(candidate_pairs(uniq, identity_threshold, k=k))
     for i, j in tqdm(pairs, desc=f"cluster@{identity_threshold:.0%}"):
         if find(i) == find(j):
             continue
