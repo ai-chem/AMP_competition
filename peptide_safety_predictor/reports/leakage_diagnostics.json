@@ -1,0 +1,22 @@
+{
+  "n_sequences": 1223,
+  "n_clusters": 446,
+  "random_split": {
+    "pearson_mean": 0.5999962308410954,
+    "pearson_std": 0.010132693870323718,
+    "mae_mean": 0.9567813309503022,
+    "r2_mean": 0.35940922469793746
+  },
+  "cluster_disjoint_split": {
+    "pearson_mean": 0.351725511581238,
+    "pearson_std": 0.004645152000920175,
+    "mae_mean": 1.164742617782822,
+    "r2_mean": 0.10969682011132956
+  },
+  "optimism_gap": {
+    "pearson": 0.24827071925985744,
+    "mae": 0.2079612868325198,
+    "r2": 0.2497124045866079
+  },
+  "interpretation": "The random-split numbers are inflated because homologous peptides appear on both sides of the fold boundary. Only the cluster-disjoint figures estimate generalization to dissimilar sequences."
+}

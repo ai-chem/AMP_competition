@@ -1,0 +1,40 @@
+{
+  "n_dbaasp_activity_rows": 4579,
+  "n_usable": 3851,
+  "n_model_ready": 2840,
+  "n_unique_sequences": 2446,
+  "censor_type_counts": {
+    "exact": 1763,
+    "right": 1044,
+    "left": 15,
+    "interval": 18
+  },
+  "y_safe_gt_128_known": 2510,
+  "y_safe_gt_128_positive": 1271,
+  "sequences_with_multiple_measurements": 226,
+  "sequences_with_conflicting_exact_gt2x": 89,
+  "processing_decision_counts": {
+    "ok": 3851,
+    "unit_conversion_failed": 400,
+    "ugml_conversion_skipped_modified": 279,
+    "unparsable_concentration:unmatched": 49
+  },
+  "unit_counts_usable": {
+    "\u00b5M": 2937,
+    "\u00b5g/ml": 914
+  },
+  "hemopi2_secondary_rows": 1926,
+  "consamphemo_secondary_rows": 1355,
+  "overlap_unique_seq_with_hemopi2": 1589,
+  "overlap_unique_seq_with_consamphemo": 1150,
+  "source_counts": {
+    "DBAASP": 2840
+  },
+  "hc50_value_quantiles_exact": {
+    "0.05": 3.466164680672834,
+    "0.25": 24.09,
+    "0.5": 64.8935853187754,
+    "0.75": 168.24188750297222,
+    "0.95": 630.911129479985
+  }
+}

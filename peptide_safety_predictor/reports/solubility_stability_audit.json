@@ -1,0 +1,15 @@
+{
+  "solubility": {
+    "endpoint": "CamSol-like physicochemical score only (no labelled dataset found)",
+    "n": 0,
+    "column_name": "solubility_proxy_score",
+    "note": "Labeled solubility data not found in cloned repos; using camsol_like descriptor.",
+    "camsol_like_available": true
+  },
+  "stability": {
+    "endpoint": "cleavage-site / oxidation physicochemical proxy only; ML_Peptide SIF available as external",
+    "n": 0,
+    "column_name": "stability_proxy_score",
+    "note": "No PEPlife half-life CSV found; inference will emit cleavage-based proxy + optional SIF."
+  }
+}

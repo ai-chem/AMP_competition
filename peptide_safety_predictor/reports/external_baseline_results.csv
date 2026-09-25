@@ -1,0 +1,7 @@
+predictor,family,potentially_contaminated,n,mae,rmse,r2,pearson_r,spearman_rho,cloned,note,checkpoint_files_found,n_checkpoints,inference_reproducible,exclusion_reason
+HemoPI2,external,True,272.0,0.8429280229963765,1.2830400538171374,0.44475070598407396,0.6672273378816216,0.6484844813364438,,,,,,
+ConsAMPHemo,external,True,,,,,,,True,quantitative HC50; check trained-model/,[],0.0,False,no checkpoint artifacts in cloned repo
+PeptideBERT,external,True,,,,,,,True,hemolysis head if checkpoint present,[],0.0,False,no checkpoint artifacts in cloned repo
+LysePred,external,True,,,,,,,True,retraining-oriented; no released checkpoint expected,"['data\\statistic\\proteintoken2index.pkl', 'data\\statistic\\backup_tokendic\\proteintoken2index.pkl']",2.0,False,checkpoints present but environment/API not wired for automated locked-test scoring in this run; see external_audit.md
+HemoNet,external,True,,,,,,,True,weights.hdf if present,['weights.hdf'],1.0,False,checkpoints present but environment/API not wired for automated locked-test scoring in this run; see external_audit.md
+ML-guided-discovery-and-design-of-non-hemolytic-peptides,external,True,,,,,,,True,binary .pkl classifiers,"['Models\\model1_hpi1.pkl', 'Models\\model1_hpi2.pkl', 'Models\\model1_hpi3.pkl', 'Models\\model2_hpi1.pkl', 'Models\\model2_hpi2.pkl', 'Models\\model2_hpi3.pkl', 'Models\\model3_hpi1.pkl', 'Models\\model3_hpi2.pkl', 'Models\\model3_hpi3.pkl']",9.0,False,checkpoints present but environment/API not wired for automated locked-test scoring in this run; see external_audit.md

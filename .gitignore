@@ -78,3 +78,6 @@ lightning_logs/
 .DS_Store
 .idea/
 .vscode/
+
+catboost_info/
+
