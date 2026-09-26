@@ -149,6 +149,62 @@ class InternalDiversityFilter:
 
 
 
+def drop_similar(
+    candidates: Sequence[SeqRecord],
+    reference_sequences: Iterable[SeqRecord],
+    max_similarity: float = 0.80,
+    log_every: int = 2000,
+) -> tuple[list[SeqRecord], dict[str, Any]]:
+    """Drop every candidate that fails the Levenshtein checks.
+
+    A candidate is removed when its normalized similarity is above ``max_similarity``
+    to the reference or to a candidate already kept. The walk covers the whole
+    input and does not stop at a target count.
+    """
+    import logging
+    import time
+
+    log = logging.getLogger("generate")
+    novelty = LevenshteinNoveltyFilter(
+        reference_sequences=reference_sequences,
+        max_similarity=max_similarity,
+    )
+    internal = InternalDiversityFilter(max_internal_similarity=max_similarity)
+    kept: list[SeqRecord] = []
+    rejected_reference = 0
+    rejected_internal = 0
+    started = time.monotonic()
+    total = len(candidates)
+
+    for index, record in enumerate(candidates, start=1):
+        if not novelty.is_novel(record):
+            rejected_reference += 1
+        elif not internal.can_add(record):
+            rejected_internal += 1
+        else:
+            internal.add(record)
+            kept.append(record)
+        if log_every and index % log_every == 0:
+            log.info(
+                "LEVENSHTEIN progress %s/%s kept=%s rejected_reference=%s rejected_internal=%s seconds=%.1f",
+                index,
+                total,
+                len(kept),
+                rejected_reference,
+                rejected_internal,
+                time.monotonic() - started,
+            )
+
+    stats = {
+        "inspected": total,
+        "kept": len(kept),
+        "rejected_reference": rejected_reference,
+        "rejected_internal": rejected_internal,
+        "max_similarity": max_similarity,
+    }
+    return kept, stats
+
+
 def select_diverse_library(
     ranked_candidates: Sequence[SeqRecord],
     target_count: int = 50_000,

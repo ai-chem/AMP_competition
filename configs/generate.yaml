@@ -1,6 +1,11 @@
 extends: default.yaml
 
-# Mass ProtGPT3 library sampling (length 8–50).
+# Official entry point: V2 soft-prompt at the five selected (Q, H) points.
+# 50_000 is the library size the challenge verifier expects.
 generation:
-  n_sequences: 100000
-  batch_size: 256
+  n_per_cluster: 50000
+  library_size: 50000
+  batch_size: 32
+  max_similarity: 0.80
+  checkpoint: checkpoint/lora_cond_v2/best
+  conditions: configs/selected_generation_conditions.csv

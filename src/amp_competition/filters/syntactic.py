@@ -42,6 +42,25 @@ class SyntacticFilter:
             if reference_sequences is not None
             else frozenset()
         )
+        self._accepted: set[str] = set()
+
+    def rejection(self, sequence: str, seen: set[str]) -> str | None:
+        """Return a rejection reason, or None after accepting ``sequence`` into ``seen``."""
+        seq = sequence.upper().strip()
+        if not (self.min_length <= len(seq) <= self.max_length):
+            return "length"
+        if not self._regex.match(seq):
+            return "alphabet"
+        if seq in seen:
+            return "duplicate"
+        if self.reference_set and seq in self.reference_set:
+            return "exact_reference"
+        seen.add(seq)
+        return None
+
+    def consider(self, sequence: str) -> str | None:
+        """Accept or reject one sequence against this filter's running set."""
+        return self.rejection(sequence, self._accepted)
 
     @classmethod
     def from_reference_fasta(
@@ -75,39 +94,13 @@ class SyntacticFilter:
             "rejected_exact_reference": 0,
         }
 
-        min_len = self.min_length
-        max_len = self.max_length
-        match = self._regex.match
-        ref_set = self.reference_set
-
         for record in records:
             stats["total_input"] += 1
-
-            seq_str = str(record.seq).upper().strip()
-            length = len(seq_str)
-
-            # 1. Length filter 
-            if not (min_len <= length <= max_len):
-                stats["rejected_length"] += 1
+            reason = self.rejection(str(record.seq), seen)
+            if reason is None:
+                passed.append(record)
                 continue
-
-            # 2. Alphabet filter 
-            if not match(seq_str):
-                stats["rejected_alphabet"] += 1
-                continue
-
-            # 3. Deduplication 
-            if seq_str in seen:
-                stats["rejected_duplicate"] += 1
-                continue
-
-            # 4. Exact reference match filter
-            if ref_set and (seq_str in ref_set):
-                stats["rejected_exact_reference"] += 1
-                continue
-
-            seen.add(seq_str)
-            passed.append(record)
+            stats[f"rejected_{reason}"] += 1
 
         stats["passed"] = len(passed)
         stats["attrition_rate"] = round(

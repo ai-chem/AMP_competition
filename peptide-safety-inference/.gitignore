@@ -1,0 +1,7 @@
+.venv/
+__pycache__/
+*.pyc
+reports/triage_*.csv
+predictions.csv
+data/interim/
+*.log

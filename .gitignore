@@ -53,8 +53,16 @@ checkpoint/lora_cond_v2/last/
 *.bin
 *.pt
 !checkpoint/lora_cond_v2/best/conditioner.pt
+!peptide-safety-inference/models/*.pt
 *.ckpt
 *.h5
+
+# Peptide-safety-inference: skip nested clones, caches, smoke outputs
+peptide-safety-inference/experiments/training_archive/external/_clones/
+peptide-safety-inference/data/
+peptide-safety-inference/reports/smoke_*.csv
+peptide-safety-inference/experiments/training_archive/**/__pycache__/
+peptide-safety-inference/experiments/finish_package.py
 
 # Data dumps (commit small samples and READMEs only)
 data/raw/*
@@ -78,3 +86,6 @@ lightning_logs/
 .DS_Store
 .idea/
 .vscode/
+
+catboost_info/
+

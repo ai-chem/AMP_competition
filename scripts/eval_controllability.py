@@ -7,6 +7,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import csv
 import json
 import sys
 from pathlib import Path
@@ -22,7 +23,6 @@ if str(SRC) not in sys.path:
 from amp_competition.config import DEFAULT_SEED, REPO_ROOT, load_config, seed_everything
 from amp_competition.data.conditions import CHARGE_KEY, HYDROPHOBICITY_KEY, conditions_for_sequence
 from amp_competition.generator.conditioning import (
-    ConditionNormalizer,
     decode_generated,
     default_suppress,
     load_v2_bundle,
@@ -82,6 +82,12 @@ def main() -> int:
     parser.add_argument("--seed", type=int, default=DEFAULT_SEED)
     parser.add_argument("--out", type=Path, default=Path("checkpoint/lora_cond_v2/controllability.json"))
     parser.add_argument("--report", type=Path, default=Path("checkpoint/lora_cond_v2/controllability.md"))
+    parser.add_argument(
+        "--sequences",
+        type=Path,
+        default=Path("checkpoint/lora_cond_v2/controllability_sequences.csv"),
+    )
+    parser.add_argument("--skip-report", action="store_true")
     args = parser.parse_args()
 
     if not torch.cuda.is_available():
@@ -109,6 +115,7 @@ def main() -> int:
     ]
 
     results = []
+    sequence_rows: list[dict[str, object]] = []
     pooled_target_q: list[float] = []
     pooled_real_q: list[float] = []
     pooled_target_h: list[float] = []
@@ -123,6 +130,19 @@ def main() -> int:
             args.n,
             args.batch_size,
         )
+        for index, row in enumerate(rows, start=1):
+            sequence_rows.append(
+                {
+                    "id": f"{target['name']}_{index:03d}",
+                    "target": target["name"],
+                    "sequence": row["sequence"],
+                    "length": row["length"],
+                    "target_charge": round(target["charge"], 6),
+                    "target_hydrophobicity": round(target["hydrophobicity"], 6),
+                    "charge_pH7_4": round(row[CHARGE_KEY], 6),
+                    "hydrophobicity_interfaceScale_pH8": round(row[HYDROPHOBICITY_KEY], 6),
+                }
+            )
         charges = [row[CHARGE_KEY] for row in rows]
         hydros = [row[HYDROPHOBICITY_KEY] for row in rows]
         summary = {
@@ -175,6 +195,27 @@ def main() -> int:
         "targets": results,
     }
     out_path.parent.mkdir(parents=True, exist_ok=True)
+    seq_path = args.sequences if args.sequences.is_absolute() else REPO_ROOT / args.sequences
+    seq_path.parent.mkdir(parents=True, exist_ok=True)
+    with seq_path.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(
+            handle,
+            fieldnames=[
+                "id",
+                "target",
+                "sequence",
+                "length",
+                "target_charge",
+                "target_hydrophobicity",
+                "charge_pH7_4",
+                "hydrophobicity_interfaceScale_pH8",
+            ],
+        )
+        writer.writeheader()
+        writer.writerows(sequence_rows)
+    print(f"wrote {seq_path} n={len(sequence_rows)}")
+    if args.skip_report:
+        return 0 if charge_moves else 1
     out_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
 
     lines = [

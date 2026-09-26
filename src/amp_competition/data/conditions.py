@@ -7,8 +7,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Iterable
 
+import peptides
+
 from amp_competition.data.peptides import load_peptide_csv, split_train_val
-from amp_competition.features.descriptors import compute_descriptor_for_sequence
 from amp_competition.features.physchem_constants import HYDROPHOBICITY_SCALES
 
 CHARGE_KEY = "charge_pH7_4"
@@ -30,9 +31,12 @@ class ConditionedPeptide:
 
 
 def conditions_for_sequence(sequence: str) -> tuple[float, float]:
-    """Charge and interface hydrophobicity from ``descriptors.py``."""
-    row = compute_descriptor_for_sequence(sequence)
-    return float(row[CHARGE_KEY]), float(row[HYDROPHOBICITY_KEY])
+    """Charge and interface hydrophobicity, same formulas as ``descriptors.py``."""
+    peptide = peptides.Peptide(sequence)
+    return (
+        float(peptide.charge(pH=7.4, pKscale="Lehninger")),
+        float(peptide.hydrophobicity(scale="interfaceScale_pH8")),
+    )
 
 
 def annotate_sequences(sequences: Iterable[str]) -> list[ConditionedPeptide]:

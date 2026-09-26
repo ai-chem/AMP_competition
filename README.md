@@ -41,18 +41,20 @@ PYTHONPATH=src python3 -m amp_competition.generate --config generate.yaml
 # or: uv run generate --config generate.yaml
 ```
 
-Writes `generate/library.fasta` (100,000 unique peptides, length 8–50) and `generate/top.fasta` (placeholder ranking until predictors are wired).
+Writes `generate/library.fasta` (50,000 unique peptides, length 8–50, split across the five V2 condition points) and `generate/top.fasta` (placeholder ranking until predictors are wired).
 
 | Flag | Default | Description |
 |---|---|---|
 | `--config` | `generate.yaml` | YAML in `configs/` |
-| `--n-sequences` | `100000` | Library size |
+| `--n-sequences` | `50000` | Library size |
 | `--top-k` | `100` | Ranked shortlist |
 | `--min-length` | `8` | Minimum peptide length |
 | `--max-length` | `50` | Maximum peptide length |
 | `--seed` | `42` | RNG seed |
+| `--checkpoint` | `checkpoint/lora_cond_v2/best` | V2 adapter |
+| `--conditions` | `configs/selected_generation_conditions.csv` | Target (Q, H) points |
 
-FASTAs are gitignored. The generator is ProtGPT3-1.3B (`AI4PD/ProtGPT3-1.3B`), not the placeholder.
+FASTAs are gitignored. The generator is conditional ProtGPT3-1.3B V2, not the base model.
 
 ## LoRA
 

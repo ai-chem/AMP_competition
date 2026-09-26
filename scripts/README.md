@@ -12,6 +12,7 @@ Run from the repo root with `PYTHONPATH=src` (or `uv run python …` after `uv s
 | `eval_lora_generate.py` | `configs/train_lora.yaml` | EOS / length histogram / train-copy check vs base |
 | `train_cond_lora.py` | `configs/train_cond.yaml` | V2: V1 LoRA + soft-prompt after BOS+`1`; aborts on NaN |
 | `generate_cond.py` | `configs/train_cond.yaml` | Sample V2 given `--charge` and `--hydrophobicity` |
+| `generate_cond_csv.py` | `configs/train_cond.yaml` | V2 library for several (Q, H) points → CSV |
 | `eval_controllability.py` | `configs/train_cond.yaml` | Recompute descriptors under several target conditions |
 | `bench_generate.py` | `configs/bench_generate.yaml` | Speed, VRAM, same-seed reproducibility |
 | `verify_submission.py` | — | Official AMP Challenge 2027 verifier |

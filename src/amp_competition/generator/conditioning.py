@@ -224,6 +224,7 @@ class ConditionalProtGPT3(nn.Module):
         *,
         num_return_sequences: int = 8,
         max_new_tokens: int = 50,
+        min_new_tokens: int | None = 8,
         temperature: float = 0.8,
         top_p: float = 0.9,
         suppress_tokens: list[int] | None = None,
@@ -252,6 +253,8 @@ class ConditionalProtGPT3(nn.Module):
             "eos_token_id": tokenizer.eos_token_id,
             "pad_token_id": tokenizer.pad_token_id,
         }
+        if min_new_tokens is not None:
+            generate_kwargs["min_new_tokens"] = int(min_new_tokens)
         if suppress_tokens:
             generate_kwargs["suppress_tokens"] = suppress_tokens
         self._set_condition(conditions)
