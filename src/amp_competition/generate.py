@@ -6,9 +6,9 @@ direction, within-run duplicates, and exact reference copies.
 
 MIC and HC50 are scored on that pool. HC50 is the ESM-2 35M fine-tune
 (µM from the censored head), not the HemoPI2 composition script. The combined
-score sorts the pool.
-``generate/library.fasta`` is the first 50_000. Reference Levenshtein above
-80% is applied only while collecting ``generate/top.fasta`` from that library.
+score sorts the pool. Reference Levenshtein above 80% is then applied to every
+scored peptide. ``generate/library.fasta`` is the first 50_000 that remain, and
+``generate/top.fasta`` is the first 100 of that library.
 """
 
 from __future__ import annotations
@@ -37,7 +37,7 @@ from amp_competition.config import (
     seed_everything,
 )
 from amp_competition.constants import LIBRARY_SIZE, MAX_LENGTH, MIN_LENGTH, TOP_SIZE
-from amp_competition.filters.similarity import select_top_novel
+from amp_competition.filters.similarity import filter_reference_novel
 from amp_competition.filters.syntactic import SyntacticFilter
 from amp_competition.generator.conditioning import (
     decode_generated,
@@ -377,27 +377,28 @@ def main() -> None:
             for index, sequence in enumerate(sequences, start=1)
         ]
         records.sort(key=lambda record: (-record.score, record.seq))
-        library_records = records[: args.library_size]
-        library = [record.seq for record in library_records]
-        _done("rank", started, library=len(library))
+        _done("rank", started, scored=len(records))
 
-        started = _stage("top_similarity")
+        started = _stage("reference_similarity")
         from Bio import SeqIO
 
         reference_records = list(SeqIO.parse(reference, "fasta"))
-        top_records, top_stats = select_top_novel(
-            library_records,
+        novel_records, similarity_stats = filter_reference_novel(
+            records,
             reference_records,
-            top_k=args.top_k,
             max_similarity=args.max_similarity,
         )
-        stats["top_similarity"] = top_stats
-        _done("top_similarity", started, **top_stats)
-        if len(top_records) < args.top_k:
+        stats["reference_similarity"] = similarity_stats
+        _done("reference_similarity", started, **similarity_stats)
+        if len(novel_records) < args.library_size:
             raise RuntimeError(
-                f"Reference similarity left {len(top_records)} peptides in the top list, "
-                f"need {args.top_k}. Submission files were not written."
+                f"Reference similarity left {len(novel_records)} peptides, "
+                f"need {args.library_size} for the library. Submission files were not written."
             )
+
+        library_records = novel_records[: args.library_size]
+        top_records = library_records[: args.top_k]
+        library = [record.seq for record in library_records]
 
         started = _stage("write")
         top = [record.seq for record in top_records]

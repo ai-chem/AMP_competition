@@ -1,0 +1,159 @@
+{
+  "run_id": "20260926T145949Z_generate",
+  "command": "generate",
+  "status": "completed",
+  "started_at": "2026-09-26T14:59:49.941352+00:00",
+  "seed": 42,
+  "deterministic": true,
+  "config": {
+    "seed": 42,
+    "deterministic": true,
+    "model": {
+      "id": "AI4PD/ProtGPT3-1.3B",
+      "dtype": "bfloat16",
+      "trust_remote_code": true
+    },
+    "generation": {
+      "n_sequences": 100000,
+      "top_k": 100,
+      "min_length": 8,
+      "max_length": 50,
+      "batch_size": 32,
+      "temperature": 0.8,
+      "top_p": 0.9,
+      "prompt": "1",
+      "checkpoint_every": 10000,
+      "reference": "/mnt/tank/scratch/igolovkin/AMP_competition/data/external/antibacterial.fasta",
+      "n_per_cluster": 50000,
+      "library_size": 50000,
+      "max_similarity": 0.8,
+      "checkpoint": "/mnt/tank/scratch/igolovkin/AMP_competition/checkpoint/lora_cond_v2/best",
+      "conditions": "/mnt/tank/scratch/igolovkin/AMP_competition/configs/selected_generation_conditions.csv"
+    },
+    "lora": {
+      "r": 16,
+      "lora_alpha": 32,
+      "lora_dropout": 0.05,
+      "target_modules": [
+        "q_proj",
+        "k_proj",
+        "v_proj",
+        "o_proj"
+      ]
+    },
+    "train": {
+      "lr": 0.0001,
+      "steps": 8,
+      "batch_size": 8,
+      "dropout": 0.0
+    }
+  },
+  "git": {
+    "commit": "8ba128b2c1b3b4407e8dc8007fbd287d17e719a6",
+    "branch": "main",
+    "dirty": true
+  },
+  "env": {
+    "hostname": "aichem",
+    "python": "3.11.16",
+    "argv": [
+      "/mnt/tank/scratch/igolovkin/AMP_competition/.venv/bin/generate"
+    ],
+    "cwd": "/mnt/tank/scratch/igolovkin/AMP_competition",
+    "torch": "2.14.0+cu126",
+    "cuda_available": true,
+    "gpu": "NVIDIA RTX A6000",
+    "transformers": "5.16.1",
+    "peft": "0.20.0"
+  },
+  "extra": {
+    "out_dir": "/mnt/tank/scratch/igolovkin/AMP_competition/generate",
+    "library": "/mnt/tank/scratch/igolovkin/AMP_competition/generate/library.fasta",
+    "top": "/mnt/tank/scratch/igolovkin/AMP_competition/generate/top.fasta",
+    "n_sequences": 250000,
+    "stats": {
+      "per_target": {
+        "cluster0": {
+          "quota": 50000,
+          "accepted": 50000,
+          "charge": 3.8510714253938487,
+          "hydrophobicity": -0.7949999999999999,
+          "rejected": {
+            "direction": 0,
+            "length": 0,
+            "alphabet": 0,
+            "duplicate": 188362,
+            "exact_reference": 233685
+          }
+        },
+        "cluster1": {
+          "quota": 50000,
+          "accepted": 50000,
+          "charge": 5.989060740126874,
+          "hydrophobicity": -0.2738888888888888,
+          "rejected": {
+            "direction": 0,
+            "length": 0,
+            "alphabet": 0,
+            "duplicate": 17698,
+            "exact_reference": 16536
+          }
+        },
+        "cluster2": {
+          "quota": 50000,
+          "accepted": 50000,
+          "charge": 12.989671031028353,
+          "hydrophobicity": -0.12625,
+          "rejected": {
+            "direction": 0,
+            "length": 0,
+            "alphabet": 0,
+            "duplicate": 5842,
+            "exact_reference": 3729
+          }
+        },
+        "cluster3": {
+          "quota": 50000,
+          "accepted": 50000,
+          "charge": 4.071446001682455,
+          "hydrophobicity": -0.4988888888888889,
+          "rejected": {
+            "direction": 0,
+            "length": 0,
+            "alphabet": 0,
+            "duplicate": 22568,
+            "exact_reference": 9557
+          }
+        },
+        "cluster4": {
+          "quota": 50000,
+          "accepted": 50000,
+          "charge": 8.065617112754325,
+          "hydrophobicity": -0.142,
+          "rejected": {
+            "direction": 0,
+            "length": 0,
+            "alphabet": 0,
+            "duplicate": 12414,
+            "exact_reference": 13494
+          }
+        }
+      },
+      "rejected": {
+        "direction": 0,
+        "length": 0,
+        "alphabet": 0,
+        "duplicate": 246884,
+        "exact_reference": 277001
+      },
+      "reference_similarity": {
+        "inspected": 250000,
+        "kept": 222291,
+        "rejected_by_reference_similarity": 27709,
+        "max_similarity": 0.8,
+        "seconds": 642.5
+      }
+    }
+  },
+  "finished_at": "2026-09-27T00:47:32.578937+00:00"
+}

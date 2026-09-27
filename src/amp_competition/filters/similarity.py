@@ -110,6 +110,64 @@ def select_top_novel(
 
     return selected, stats
 
+
+def filter_reference_novel(
+    ranked_candidates: Sequence[SeqRecord],
+    reference_sequences: Iterable[SeqRecord],
+    max_similarity: float = 0.80,
+    log_every: int = 2000,
+) -> tuple[list[SeqRecord], dict[str, Any]]:
+    """Drop every candidate too similar to the reference.
+
+    The walk covers the whole input and does not stop at a target count.
+    Similarity among the candidates themselves is not checked. Input order is
+    preserved, so a score-sorted list stays score-sorted.
+    """
+    import logging
+    import time
+
+    log = logging.getLogger("generate")
+    novelty = LevenshteinNoveltyFilter(
+        reference_sequences=reference_sequences,
+        max_similarity=max_similarity,
+    )
+    kept: list[SeqRecord] = []
+    rejected = 0
+    started = time.monotonic()
+    total = len(ranked_candidates)
+
+    for index, record in enumerate(ranked_candidates, start=1):
+        if novelty.is_novel(record):
+            kept.append(record)
+        else:
+            rejected += 1
+        if log_every and index % log_every == 0:
+            log.info(
+                "REFERENCE SIMILARITY progress %s/%s kept=%s rejected=%s seconds=%.1f",
+                index,
+                total,
+                len(kept),
+                rejected,
+                time.monotonic() - started,
+            )
+
+    stats = {
+        "inspected": total,
+        "kept": len(kept),
+        "rejected_by_reference_similarity": rejected,
+        "max_similarity": max_similarity,
+        "seconds": round(time.monotonic() - started, 1),
+    }
+    log.info(
+        "REFERENCE SIMILARITY done inspected=%s kept=%s rejected=%s seconds=%.1f",
+        total,
+        len(kept),
+        rejected,
+        time.monotonic() - started,
+    )
+    return kept, stats
+
+
 class InternalDiversityFilter:
     """Internal diversity selection.
 
