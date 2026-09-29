@@ -27,15 +27,17 @@ class ProteinDecode:
     sequence: str
 
 
-def load_tokenizer(model_id: str, trust_remote_code: bool = True):
+def load_tokenizer(model_id: str, trust_remote_code: bool = True, revision: str | None = None):
     """Match the ProtGPT3 model card: BOS on, EOS off, left padding."""
-    return AutoTokenizer.from_pretrained(
-        model_id,
-        trust_remote_code=trust_remote_code,
-        add_bos_token=True,
-        add_eos_token=False,
-        padding_side="left",
-    )
+    kwargs: dict[str, Any] = {
+        "trust_remote_code": trust_remote_code,
+        "add_bos_token": True,
+        "add_eos_token": False,
+        "padding_side": "left",
+    }
+    if revision:
+        kwargs["revision"] = revision
+    return AutoTokenizer.from_pretrained(model_id, **kwargs)
 
 
 def _dtype(name: str) -> torch.dtype:
@@ -60,6 +62,7 @@ def load_model(
     trust_remote_code: bool = True,
     device_map: str | dict[str, Any] | None = "auto",
     eval_mode: bool = True,
+    revision: str | None = None,
 ):
     kwargs: dict[str, Any] = {
         "dtype": _dtype(dtype),
@@ -67,6 +70,8 @@ def load_model(
     }
     if device_map is not None:
         kwargs["device_map"] = device_map
+    if revision:
+        kwargs["revision"] = revision
     model = AutoModelForCausalLM.from_pretrained(model_id, **kwargs)
     if eval_mode:
         model.eval()
@@ -78,9 +83,11 @@ def load_from_config(config: dict[str, Any] | None = None, *, for_training: bool
         config = load_config()
     model_cfg = config.get("model", {})
     model_id = model_cfg.get("id", "AI4PD/ProtGPT3-1.3B")
+    revision = model_cfg.get("revision") or None
     tokenizer = load_tokenizer(
         model_id,
         trust_remote_code=bool(model_cfg.get("trust_remote_code", True)),
+        revision=revision,
     )
     model = load_model(
         model_id,
@@ -88,6 +95,7 @@ def load_from_config(config: dict[str, Any] | None = None, *, for_training: bool
         trust_remote_code=bool(model_cfg.get("trust_remote_code", True)),
         device_map=None if for_training else "auto",
         eval_mode=not for_training,
+        revision=revision,
     )
     return tokenizer, model
 

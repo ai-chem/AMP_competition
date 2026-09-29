@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 import json
+from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Iterable, Sequence
+from typing import Any, Iterable, Iterator, Sequence
 
 import torch
 import torch.nn as nn
@@ -23,6 +24,32 @@ from amp_competition.generator.protgpt3 import (
 
 # <|bos|> and direction ``1`` stay first; condition tokens sit before amino acids.
 CONDITION_INSERT_AT = 2
+
+
+@contextmanager
+def _cpu_multinomial(generator: torch.Generator) -> Iterator[None]:
+    """Draw tokens on a CPU generator so two runs share one sample stream.
+
+    Hugging Face ``generate`` calls ``torch.multinomial`` without a generator.
+    CUDA multinomial is not stable across runs. Sampling the same probabilities
+    on CPU with an explicit generator is.
+    """
+    original = torch.multinomial
+
+    def patched(input, num_samples, replacement=False, *, generator=None, out=None):
+        if out is not None:
+            raise RuntimeError("multinomial out= is not used on the submission path")
+        gen = generator if generator is not None else cpu_generator
+        cpu_input = input.detach().to(dtype=torch.float32, device="cpu")
+        drawn = original(cpu_input, num_samples, replacement, generator=gen)
+        return drawn.to(device=input.device)
+
+    cpu_generator = generator
+    torch.multinomial = patched
+    try:
+        yield
+    finally:
+        torch.multinomial = original
 
 
 def condition_dummy_id(tokenizer) -> int:
@@ -228,6 +255,7 @@ class ConditionalProtGPT3(nn.Module):
         temperature: float = 0.8,
         top_p: float = 0.9,
         suppress_tokens: list[int] | None = None,
+        generator: torch.Generator | None = None,
     ) -> list[str]:
         self.model.eval()
         self.conditioner.eval()
@@ -259,7 +287,11 @@ class ConditionalProtGPT3(nn.Module):
             generate_kwargs["suppress_tokens"] = suppress_tokens
         self._set_condition(conditions)
         try:
-            output_ids = self.model.generate(**generate_kwargs)
+            if generator is None:
+                output_ids = self.model.generate(**generate_kwargs)
+            else:
+                with _cpu_multinomial(generator):
+                    output_ids = self.model.generate(**generate_kwargs)
         finally:
             self._pending_cond = None
         texts = tokenizer.batch_decode(output_ids, skip_special_tokens=True)

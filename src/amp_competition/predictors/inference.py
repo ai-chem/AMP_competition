@@ -32,6 +32,7 @@ class AMPRanker:
         self,
         models_dir: str | Path = "models",
         model_name: str = "facebook/esm2_t6_8M_UR50D",
+        revision: str | None = None,
         batch_size: int = 64,
         local_files_only: bool = True,
     ):
@@ -47,13 +48,24 @@ class AMPRanker:
         self.physchem_cols = joblib.load(self.models_dir / "physchem_cols.pkl")
 
         self.device = select_device()
+        hub_kwargs: dict = {}
+        if revision:
+            hub_kwargs["revision"] = revision
 
         try:
-            self.tokenizer = AutoTokenizer.from_pretrained(model_name, local_files_only=local_files_only)
-            self.esm_model = EsmModel.from_pretrained(model_name, local_files_only=local_files_only).to(self.device)
+            self.tokenizer = AutoTokenizer.from_pretrained(
+                model_name, local_files_only=local_files_only, **hub_kwargs
+            )
+            self.esm_model = EsmModel.from_pretrained(
+                model_name, local_files_only=local_files_only, **hub_kwargs
+            ).to(self.device)
         except Exception:
-            self.tokenizer = AutoTokenizer.from_pretrained(model_name, local_files_only=False)
-            self.esm_model = EsmModel.from_pretrained(model_name, local_files_only=False).to(self.device)
+            self.tokenizer = AutoTokenizer.from_pretrained(
+                model_name, local_files_only=False, **hub_kwargs
+            )
+            self.esm_model = EsmModel.from_pretrained(
+                model_name, local_files_only=False, **hub_kwargs
+            ).to(self.device)
 
         self.esm_model.eval()
         for p in self.esm_model.parameters():

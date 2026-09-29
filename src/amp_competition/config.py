@@ -64,11 +64,21 @@ def load_config(name: str | Path = "default.yaml") -> dict[str, Any]:
     return _load(_resolve_config_path(name), ())
 
 
-def seed_everything(seed: int = DEFAULT_SEED, *, deterministic: bool = True) -> None:
-    """Seed Python, NumPy, and Torch. Call before model load / sampling."""
+def seed_everything(
+    seed: int = DEFAULT_SEED,
+    *,
+    deterministic: bool = True,
+    strict: bool = False,
+) -> None:
+    """Seed Python, NumPy, and Torch. Call before model load / sampling.
+
+    ``strict`` is the submission path: TF32 and flash attention stay off, and
+    deterministic algorithms are required. ``CUBLAS_WORKSPACE_CONFIG`` must
+    already be set before CUDA initializes; ``generate.py`` sets it at import.
+    """
     os.environ["PYTHONHASHSEED"] = str(seed)
     if deterministic:
-        os.environ.setdefault("CUBLAS_WORKSPACE_CONFIG", ":4096:8")
+        os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":4096:8"
     random.seed(seed)
     try:
         import numpy as np
@@ -83,6 +93,15 @@ def seed_everything(seed: int = DEFAULT_SEED, *, deterministic: bool = True) -> 
         torch.cuda.manual_seed_all(seed)
     torch.backends.cudnn.deterministic = bool(deterministic)
     torch.backends.cudnn.benchmark = not deterministic
+    if deterministic and strict:
+        torch.backends.cuda.matmul.allow_tf32 = False
+        torch.backends.cudnn.allow_tf32 = False
+        if hasattr(torch.backends.cuda, "enable_flash_sdp"):
+            torch.backends.cuda.enable_flash_sdp(False)
+            torch.backends.cuda.enable_mem_efficient_sdp(False)
+            torch.backends.cuda.enable_math_sdp(True)
+        torch.use_deterministic_algorithms(True)
+        return
     try:
         torch.use_deterministic_algorithms(bool(deterministic), warn_only=True)
     except (TypeError, RuntimeError):

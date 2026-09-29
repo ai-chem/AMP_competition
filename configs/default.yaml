@@ -6,8 +6,13 @@ deterministic: true
 
 model:
   id: AI4PD/ProtGPT3-1.3B
+  revision: 8bdbca30ef91fc2fd208a1f55ccee7a0990c2dab
   dtype: bfloat16
   trust_remote_code: true
+
+ranker:
+  model_id: facebook/esm2_t6_8M_UR50D
+  revision: c731040fcd8d73dceaa04b0a8e6329b345b0f5df
 
 generation:
   n_sequences: 100000

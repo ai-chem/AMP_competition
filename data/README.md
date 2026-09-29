@@ -4,8 +4,8 @@ Keep large FASTA/CSV dumps out of git. Commit only small samples, schemas, and d
 
 | Path | Contents |
 |---|---|
-| `raw/` | Unmodified downloads (DBAASP, DRAMP, GRAMPA, organizer files) |
-| `processed/` | Cleaned AMP corpus and train/val splits |
+| `raw/` | Unmodified downloads. `antibacterial_clean.csv` is the cleaned organizer reference and is tracked |
+| `processed/` | Cleaned AMP corpus and train/val splits. GRAMPA is rebuilt here by `build_MIC_dataset.py` |
 | `external/` | Reference files such as `antibacterial.fasta` from the organizers |
 
 The organizer reference set is fetched as an immutable input together with a

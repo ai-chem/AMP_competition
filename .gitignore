@@ -20,6 +20,7 @@ generate/**/*.stats.json
 generate/run.json
 generate/config.resolved.yaml
 generate/length_histogram.png
+generate/*.csv
 
 # Models & predictions
 !models/.gitkeep
@@ -67,6 +68,9 @@ peptide-safety-inference/experiments/finish_package.py
 # Data dumps (commit small samples and READMEs only)
 data/raw/*
 !data/raw/.gitkeep
+!data/raw/antibacterial_clean.csv
+!data/raw/GRAMPA/
+!data/raw/GRAMPA/grampa.csv
 data/processed/*
 !data/processed/.gitkeep
 data/external/*

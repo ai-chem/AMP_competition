@@ -36,23 +36,49 @@ Each run writes `run.json` + `config.resolved.yaml` next to outputs and under `r
 
 ## Generate
 
+`uv run generate` is the submission entry point. It needs a CUDA GPU and, on a
+machine without the Hugging Face cache, a network connection to download the
+pinned base models. With the defaults it writes:
+
 ```bash
-PYTHONPATH=src python3 -m amp_competition.generate --config generate.yaml
-# or: uv run generate --config generate.yaml
+uv run generate
 ```
 
-Writes `generate/library.fasta` (50,000 unique peptides, length 8–50, split across the five V2 condition points) and `generate/top.fasta` (placeholder ranking until predictors are wired).
+| File | Contents |
+|---|---|
+| `generate/library.fasta` | 50,000 unique peptides, the highest-scoring survivors |
+| `generate/top.fasta` | first 100 of that library, same order |
+| `generate/passed_scores.csv` | every peptide that passed the reference screen, with MIC, HC50, and the combined score |
+
+Sampling draws 50,000 accepted peptides at each of the five V2 condition points
+(250,000 before the reference screen). Acceptance during sampling is length,
+the 20-letter alphabet, N→C direction, within-run duplicates, and exact copies
+of `data/external/antibacterial.fasta`. MIC and HC50 are scored on that pool.
+The combined score is the sum of the average rank of MIC and the average rank
+of `log(HC50)`. Peptides with `Levenshtein.ratio` above 0.80 against the
+organizer reference are removed, then the library and the top-100 are the head
+of what remains.
 
 | Flag | Default | Description |
 |---|---|---|
 | `--config` | `generate.yaml` | YAML in `configs/` |
-| `--n-sequences` | `50000` | Library size |
+| `--n-sequences` | `50000` | Alias of `--library-size` |
+| `--library-size` | `50000` | Peptides written to `library.fasta` |
+| `--n-per-cluster` | `50000` | Accepted peptides sampled at each condition point |
 | `--top-k` | `100` | Ranked shortlist |
 | `--min-length` | `8` | Minimum peptide length |
 | `--max-length` | `50` | Maximum peptide length |
 | `--seed` | `42` | RNG seed |
+| `--batch-size` | `32` | Fixed sampling batch. A mid-run reduction would change the sample stream, so an out-of-memory error stops the run |
 | `--checkpoint` | `checkpoint/lora_cond_v2/best` | V2 adapter |
 | `--conditions` | `configs/selected_generation_conditions.csv` | Target (Q, H) points |
+
+The seed is fixed. Token sampling uses a CPU `torch.Generator`, TF32 and flash
+attention are off, and deterministic CUDA algorithms are required. Run the
+command twice on the same GPU: `library.fasta` and `top.fasta` should be
+byte-identical. Details of the rank and the training tables are in
+[docs/ranking.md](docs/ranking.md) and [docs/data.md](docs/data.md). A short
+method summary is in [docs/abstract.md](docs/abstract.md).
 
 FASTAs are gitignored. The generator is conditional ProtGPT3-1.3B V2, not the base model.
 

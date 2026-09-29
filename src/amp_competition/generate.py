@@ -6,9 +6,12 @@ direction, within-run duplicates, and exact reference copies.
 
 MIC and HC50 are scored on that pool. HC50 is the ESM-2 35M fine-tune
 (µM from the censored head), not the HemoPI2 composition script. The combined
-score sorts the pool. Reference Levenshtein above 80% is then applied to every
-scored peptide. ``generate/library.fasta`` is the first 50_000 that remain, and
-``generate/top.fasta`` is the first 100 of that library.
+score sorts the pool. Reference similarity uses ``Levenshtein.ratio`` and
+drops every peptide above 80%, the same test as the organizer validator.
+``generate/passed_scores.csv`` keeps every survivor with the MIC, HC50,
+combined score from the full pool, and its cluster charge and hydrophobicity.
+``generate/library.fasta`` is the first 50_000 of that table, and
+``generate/top.fasta`` is the first 100.
 """
 
 from __future__ import annotations
@@ -18,11 +21,14 @@ import csv
 import gc
 import importlib.util
 import logging
+import os
 import sys
 import time
 from copy import deepcopy
 from dataclasses import dataclass
 from pathlib import Path
+
+os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":4096:8"
 
 import numpy as np
 import torch
@@ -57,6 +63,11 @@ class _Seq:
     seq: str
     id: str
     score: float
+    mic: float
+    hc50: float
+    cluster: str
+    charge: float
+    hydrophobicity: float
 
 
 def _configure_logging(log_path: Path) -> None:
@@ -122,25 +133,56 @@ def _hc50_micromolar(sequences: list[str]) -> np.ndarray:
     bundle_path = root / "models" / "hc50_bundle.pkl"
     if checkpoint.stat().st_size < 1_000_000 or bundle_path.stat().st_size < 1_000_000:
         raise RuntimeError(f"HC50 weights are missing or still Git LFS pointers: {checkpoint}")
+    batch = 32
     module = _load_safety_predict()
     bundle = module.load_bundle(bundle_path)
     device = module._resolve_device("cuda")
     head, tokenizer = module._load_ft_head(bundle, device)
-    batch = 32
-    while True:
-        try:
-            mu, _sigma = module._predict_ft(head, tokenizer, sequences, device, bs=batch)
-            break
-        except torch.cuda.OutOfMemoryError:
-            torch.cuda.empty_cache()
-            if batch <= 4:
-                raise
-            batch //= 2
-            LOG.info("HC50 batch reduced to %s after OOM", batch)
+    try:
+        mu, _sigma = module._predict_ft(head, tokenizer, sequences, device, bs=batch)
+    except torch.cuda.OutOfMemoryError as exc:
+        raise SystemExit(
+            f"CUDA out of memory in HC50 scoring at batch_size={batch}. "
+            "The batch is fixed so two runs keep the same scores."
+        ) from exc
     del head, tokenizer
     gc.collect()
     torch.cuda.empty_cache()
     return np.exp(np.asarray(mu, dtype=np.float64))
+
+
+def _write_passed_scores(records: list[_Seq], path: Path) -> None:
+    """Write survivors in score order. ``combined_score`` is the full-pool value used to sort."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.writer(handle)
+        writer.writerow(
+            [
+                "rank",
+                "id",
+                "sequence",
+                "cluster",
+                "charge",
+                "hydrophobicity",
+                "mic",
+                "hc50_uM",
+                "combined_score",
+            ]
+        )
+        for rank, record in enumerate(records, start=1):
+            writer.writerow(
+                [
+                    rank,
+                    f"amp{rank}",
+                    record.seq,
+                    record.cluster,
+                    f"{record.charge:.6f}",
+                    f"{record.hydrophobicity:.6f}",
+                    f"{record.mic:.6f}",
+                    f"{record.hc50:.6f}",
+                    f"{record.score:.6f}",
+                ]
+            )
 
 
 def _combined_scores(mic: np.ndarray, hc50: np.ndarray) -> np.ndarray:
@@ -173,6 +215,12 @@ def main() -> None:
     parser.add_argument("--config", default=pre_args.config, help="YAML in configs/ or a path")
     parser.add_argument("--n-per-cluster", type=int, default=default_per_cluster)
     parser.add_argument("--library-size", type=int, default=int(generation.get("library_size", LIBRARY_SIZE)))
+    parser.add_argument(
+        "--n-sequences",
+        type=int,
+        default=None,
+        help="Alias of --library-size. Defaults to the config value, 50000.",
+    )
     parser.add_argument("--top-k", type=int, default=int(generation.get("top_k", TOP_SIZE)))
     parser.add_argument("--min-length", type=int, default=int(generation.get("min_length", MIN_LENGTH)))
     parser.add_argument("--max-length", type=int, default=int(generation.get("max_length", MAX_LENGTH)))
@@ -196,6 +244,8 @@ def main() -> None:
         default=REPO_ROOT / "outputs" / "uv_generate_stages.log",
     )
     args = parser.parse_args()
+    if args.n_sequences is not None:
+        args.library_size = args.n_sequences
 
     _configure_logging(args.log_file if args.log_file.is_absolute() else REPO_ROOT / args.log_file)
     checkpoint = args.checkpoint if args.checkpoint.is_absolute() else REPO_ROOT / args.checkpoint
@@ -232,7 +282,7 @@ def main() -> None:
 
     out_dir = args.out_dir
     out_dir.mkdir(parents=True, exist_ok=True)
-    seed_everything(args.seed, deterministic=bool(resolved.get("deterministic", True)))
+    seed_everything(args.seed, deterministic=bool(resolved.get("deterministic", True)), strict=True)
     run = save_run("generate", resolved, out_dir=out_dir, extra={"out_dir": str(out_dir)})
 
     targets = _load_targets(conditions_path)
@@ -260,6 +310,7 @@ def main() -> None:
         suppress = default_suppress(tokenizer)
         batch_size = args.batch_size
         sequences: list[str] = []
+        origins: list[tuple[str, float, float]] = []
         rejected = {
             "direction": 0,
             "length": 0,
@@ -269,7 +320,10 @@ def main() -> None:
         }
 
         for target_index, target in enumerate(targets):
-            seed_everything(args.seed + 17 * (target_index + 1), deterministic=True)
+            cluster_seed = args.seed + 17 * (target_index + 1)
+            seed_everything(cluster_seed, deterministic=True, strict=True)
+            cluster_generator = torch.Generator(device="cpu")
+            cluster_generator.manual_seed(cluster_seed)
             before = len(sequences)
             name = str(target["name"])
             cluster_rejected = {key: 0 for key in rejected}
@@ -287,14 +341,14 @@ def main() -> None:
                         temperature=args.temperature,
                         top_p=args.top_p,
                         suppress_tokens=suppress,
+                        generator=cluster_generator,
                     )
-                except torch.cuda.OutOfMemoryError:
-                    torch.cuda.empty_cache()
-                    if batch_size <= 1:
-                        raise
-                    batch_size = max(1, batch_size // 2)
-                    LOG.info("CUDA OOM, batch_size=%s", batch_size)
-                    continue
+                except torch.cuda.OutOfMemoryError as exc:
+                    raise SystemExit(
+                        f"CUDA out of memory at batch_size={batch_size}. "
+                        "Lower generation.batch_size and rerun from scratch. "
+                        "The batch is not reduced mid-run, because that changes the sample stream."
+                    ) from exc
                 for item in decode_generated(texts):
                     if item["direction"] != "N2C":
                         rejected["direction"] += 1
@@ -306,6 +360,7 @@ def main() -> None:
                         cluster_rejected[reason] += 1
                         continue
                     sequences.append(item["sequence"])
+                    origins.append((name, float(target["charge"]), float(target["hydrophobicity"])))
                     progress.update(1)
                     if len(sequences) - before >= args.n_per_cluster:
                         break
@@ -337,7 +392,14 @@ def main() -> None:
         started = _stage("mic")
         from amp_competition.predictors.inference import AMPRanker
 
-        ranker = AMPRanker(models_dir=REPO_ROOT / "models", batch_size=32)
+        ranker_cfg = resolved.get("ranker", {})
+        revision = ranker_cfg.get("revision") or None
+        ranker = AMPRanker(
+            models_dir=REPO_ROOT / "models",
+            batch_size=32,
+            model_name=str(ranker_cfg.get("model_id", "facebook/esm2_t6_8M_UR50D")),
+            revision=None if revision is None else str(revision),
+        )
         mic = np.asarray(ranker.predict(sequences), dtype=np.float64)
         _done(
             "mic",
@@ -373,7 +435,16 @@ def main() -> None:
 
         started = _stage("rank")
         records = [
-            _Seq(seq=sequence, id=f"amp{index}", score=float(combined[index - 1]))
+            _Seq(
+                seq=sequence,
+                id=f"amp{index}",
+                score=float(combined[index - 1]),
+                mic=float(mic[index - 1]),
+                hc50=float(hc50[index - 1]),
+                cluster=origins[index - 1][0],
+                charge=origins[index - 1][1],
+                hydrophobicity=origins[index - 1][2],
+            )
             for index, sequence in enumerate(sequences, start=1)
         ]
         records.sort(key=lambda record: (-record.score, record.seq))
@@ -404,10 +475,21 @@ def main() -> None:
         top = [record.seq for record in top_records]
         library_path = out_dir / "library.fasta"
         top_path = out_dir / "top.fasta"
+        scores_path = out_dir / "passed_scores.csv"
         write_fasta(library, library_path, prefix="amp")
         write_fasta(top, top_path, prefix="top")
+        _write_passed_scores(novel_records, scores_path)
         write_stats(stats, out_dir / "library.stats.json")
-        _done("write", started, library=len(library), top=len(top), library_path=library_path, top_path=top_path)
+        _done(
+            "write",
+            started,
+            library=len(library),
+            top=len(top),
+            passed=len(novel_records),
+            library_path=library_path,
+            top_path=top_path,
+            scores_path=scores_path,
+        )
         status = "completed"
         finish_run(
             run,

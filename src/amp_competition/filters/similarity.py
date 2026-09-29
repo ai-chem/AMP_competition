@@ -1,4 +1,9 @@
-"""Levenshtein similarity filtering against reference sequences using RapidFuzz."""
+"""Levenshtein similarity filtering with the organizer's ratio.
+
+``Levenshtein.ratio`` is ``(len1 + len2 - dist) / (len1 + len2)``, the same
+function ``scripts/verify_submission.py`` uses. A peptide fails when that
+ratio is strictly greater than ``max_similarity``.
+"""
 
 from __future__ import annotations
 
@@ -7,8 +12,21 @@ from collections import defaultdict
 from collections.abc import Iterable, Sequence
 from typing import Any
 
+import Levenshtein
 from Bio.SeqRecord import SeqRecord
-from rapidfuzz.distance import Levenshtein
+
+
+def _ratio_length_bounds(length: int, threshold: float) -> tuple[int, int]:
+    """Lengths that can still produce ``Levenshtein.ratio`` above ``threshold``.
+
+    The maximum ratio at a fixed pair of lengths is ``2 * min / (len1 + len2)``,
+    reached when the edit distance is only the length difference.
+    """
+    if length <= 0 or not 0.0 < threshold <= 1.0:
+        return 1, 0
+    minimum = math.floor(length * threshold / (2.0 - threshold)) + 1
+    maximum = math.ceil(length * (2.0 - threshold) / threshold) - 1
+    return max(minimum, 1), maximum
 
 
 class LevenshteinNoveltyFilter:
@@ -39,19 +57,13 @@ class LevenshteinNoveltyFilter:
         self.total_references = sum(len(seqs) for seqs in self._ref_by_length.values())
 
     def is_novel(self, record: SeqRecord) -> bool:
-        """Returns True if the sequence is new (similarity <= max_similarity with all).
-        Returns False if at least one match with similarity > max_similarity is found.
-        """
+        """Return True when every reference has ratio <= max_similarity."""
         if self.total_references == 0:
             return True
 
         seq = str(record.seq).upper().strip()
-        target_len = len(seq)
         threshold = self.max_similarity
-
-        # Mathematical boundaries of lengths: outside this range, the similarity cannot be > threshold
-        min_len = math.ceil(target_len * threshold)
-        max_len = math.floor(target_len / threshold)
+        min_len, max_len = _ratio_length_bounds(len(seq), threshold)
 
         for ref_len in range(min_len, max_len + 1):
             candidates = self._ref_by_length.get(ref_len)
@@ -59,8 +71,7 @@ class LevenshteinNoveltyFilter:
                 continue
 
             for ref_seq in candidates:
-                sim = Levenshtein.normalized_similarity(seq, ref_seq, score_cutoff=threshold)
-                if sim > threshold:
+                if Levenshtein.ratio(seq, ref_seq) > threshold:
                     return False
 
         return True
@@ -182,11 +193,8 @@ class InternalDiversityFilter:
         
     def can_add(self, record: SeqRecord) -> bool:
         seq = str(record.seq).upper().strip()
-        target_len = len(seq)
         threshold = self.max_similarity
-
-        min_len = math.ceil(target_len * threshold)
-        max_len = math.floor(target_len / threshold)
+        min_len, max_len = _ratio_length_bounds(len(seq), threshold)
 
         for ref_len in range(min_len, max_len + 1):
             pool_group = self._pool_by_length.get(ref_len)
@@ -194,8 +202,7 @@ class InternalDiversityFilter:
                 continue
 
             for accepted_seq in pool_group:
-                sim = Levenshtein.normalized_similarity(seq, accepted_seq, score_cutoff=threshold)
-                if sim > threshold:
+                if Levenshtein.ratio(seq, accepted_seq) > threshold:
                     return False
 
         return True
@@ -215,7 +222,7 @@ def drop_similar(
 ) -> tuple[list[SeqRecord], dict[str, Any]]:
     """Drop every candidate that fails the Levenshtein checks.
 
-    A candidate is removed when its normalized similarity is above ``max_similarity``
+    A candidate is removed when its Levenshtein ratio is above ``max_similarity``
     to the reference or to a candidate already kept. The walk covers the whole
     input and does not stop at a target count.
     """
