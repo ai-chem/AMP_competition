@@ -74,3 +74,11 @@ Applied after scoring, before writing `library.fasta` and `top.fasta`:
 No terminal modifications, noncanonical residues, or hand-picked replacements
 are introduced. Generation hyperparameters are in `configs/generate.yaml`
 (seed 42, temperature 0.8, top-p 0.9, batch size 32).
+
+## Physicochemical condition selection
+
+The two V2 conditioning variables were selected by comparing the organizer AMP dataset with putative non-AMP sequences retrieved from UniProtKB. Background sequences were restricted to the canonical 20-amino-acid alphabet and lengths of 8–50 residues, and sequences carrying antimicrobial or related annotations were excluded. Exact duplicates and exact matches to the organizer AMP set were removed.
+
+To control for the strong difference in sequence length between the two populations, the primary condition-selection analysis used exact length-matched cohorts of 35,627 AMP and 35,627 putative non-AMP sequences. The analysis selected net charge at pH 7.4 and Wimley–White interfacial hydrophobicity at pH 8 as the V2 conditioning variables. Their joint AMP enrichment was estimated using two-dimensional Gaussian KDE, and five representative generation conditions were selected from strongly AMP-enriched regions supported by observed AMP sequences.
+
+The UniProt-derived background is used only for physicochemical analysis and condition selection.
