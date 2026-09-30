@@ -8,7 +8,16 @@ Dependencies are locked with [`uv`](https://docs.astral.sh/uv/).
 
 ## Setup
 
+The HC50 weights are Git LFS objects:
+
+- `peptide-safety-inference/models/esm2_35M_ft.pt`
+- `peptide-safety-inference/models/hc50_bundle.pkl`
+
+A clone without Git LFS leaves those paths as ~130-byte pointer files, and `uv run generate` stops. After cloning:
+
 ```bash
+git lfs install
+git lfs pull
 uv sync
 ```
 
@@ -36,9 +45,10 @@ Each run writes `run.json` + `config.resolved.yaml` next to outputs and under `r
 
 ## Generate
 
-`uv run generate` is the submission entry point. It needs a CUDA GPU and, on a
-machine without the Hugging Face cache, a network connection to download the
-pinned base models. With the defaults it writes:
+`uv run generate` is the submission entry point. It needs a CUDA GPU, the
+Git LFS weights from Setup, and, on a machine without the Hugging Face cache,
+a network connection to download the pinned base models. With the defaults it
+writes:
 
 ```bash
 uv run generate
