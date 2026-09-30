@@ -1,0 +1,40 @@
+seed: 42
+deterministic: true
+model:
+  id: AI4PD/ProtGPT3-1.3B
+  revision: 8bdbca30ef91fc2fd208a1f55ccee7a0990c2dab
+  dtype: bfloat16
+  trust_remote_code: true
+ranker:
+  model_id: facebook/esm2_t6_8M_UR50D
+  revision: c731040fcd8d73dceaa04b0a8e6329b345b0f5df
+generation:
+  n_sequences: 100000
+  top_k: 100
+  min_length: 8
+  max_length: 50
+  batch_size: 32
+  temperature: 0.8
+  top_p: 0.9
+  prompt: '1'
+  checkpoint_every: 10000
+  reference: /mnt/tank/scratch/igolovkin/AMP_competition/data/external/antibacterial.fasta
+  n_per_cluster: 50000
+  library_size: 50000
+  max_similarity: 0.8
+  checkpoint: /mnt/tank/scratch/igolovkin/AMP_competition/checkpoint/lora_cond_v2/best
+  conditions: /mnt/tank/scratch/igolovkin/AMP_competition/configs/selected_generation_conditions.csv
+lora:
+  r: 16
+  lora_alpha: 32
+  lora_dropout: 0.05
+  target_modules:
+  - q_proj
+  - k_proj
+  - v_proj
+  - o_proj
+train:
+  lr: 0.0001
+  steps: 8
+  batch_size: 8
+  dropout: 0.0

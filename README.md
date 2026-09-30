@@ -89,7 +89,7 @@ PYTHONPATH=src python3 scripts/train_lora.py --config train_lora.yaml
 PYTHONPATH=src python3 scripts/eval_lora_generate.py
 ```
 
-Best adapter: `checkpoint/lora_antibacterial/best/` (see that folder’s README for specs, val curve, and EOS / copy-check). CSV stays gitignored under `data/raw/`.
+Best adapter: `checkpoint/lora_antibacterial/best/` (see that folder’s README for specs, val curve, and EOS / copy-check). The training table is `data/raw/antibacterial_clean.csv`.
 
 ## Physicochemical analysis
 
@@ -117,10 +117,11 @@ See **[scripts/README.md](scripts/README.md)**.
 │   │   └── lora.py               # LoRA on frozen base
 │   ├── data/                     # peptide CSV loader / split
 │   ├── features/                 # physchem descriptors, cohorts, comparison
-│   ├── predictors/               # MIC / hemolysis (not wired yet)
+│   ├── predictors/               # MIC ranker used by `uv run generate`
 │   └── filters/
 ├── data/                         # raw / processed / external
 ├── generate/                     # library.fasta (gitignored)
+├── legacy3/                      # byte-matched 50k library and top-100
 ├── checkpoint/                   # LoRA adapters (`lora_antibacterial/best` is tracked)
 ├── scripts/                      # checks, bench, submission verifier
 ├── runs/                         # run archives (gitignored)

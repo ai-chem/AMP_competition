@@ -1,0 +1,83 @@
+{
+  "per_target": {
+    "cluster0": {
+      "quota": 50000,
+      "accepted": 50000,
+      "charge": 3.8510714253938487,
+      "hydrophobicity": -0.7949999999999999,
+      "rejected": {
+        "direction": 0,
+        "length": 0,
+        "alphabet": 0,
+        "duplicate": 199093,
+        "exact_reference": 246763
+      }
+    },
+    "cluster1": {
+      "quota": 50000,
+      "accepted": 50000,
+      "charge": 5.989060740126874,
+      "hydrophobicity": -0.2738888888888888,
+      "rejected": {
+        "direction": 0,
+        "length": 0,
+        "alphabet": 0,
+        "duplicate": 17836,
+        "exact_reference": 16969
+      }
+    },
+    "cluster2": {
+      "quota": 50000,
+      "accepted": 50000,
+      "charge": 12.989671031028353,
+      "hydrophobicity": -0.12625,
+      "rejected": {
+        "direction": 0,
+        "length": 0,
+        "alphabet": 0,
+        "duplicate": 5923,
+        "exact_reference": 3557
+      }
+    },
+    "cluster3": {
+      "quota": 50000,
+      "accepted": 50000,
+      "charge": 4.071446001682455,
+      "hydrophobicity": -0.4988888888888889,
+      "rejected": {
+        "direction": 0,
+        "length": 0,
+        "alphabet": 0,
+        "duplicate": 22864,
+        "exact_reference": 10055
+      }
+    },
+    "cluster4": {
+      "quota": 50000,
+      "accepted": 50000,
+      "charge": 8.065617112754325,
+      "hydrophobicity": -0.142,
+      "rejected": {
+        "direction": 0,
+        "length": 0,
+        "alphabet": 0,
+        "duplicate": 12441,
+        "exact_reference": 13307
+      }
+    }
+  },
+  "rejected": {
+    "direction": 0,
+    "length": 0,
+    "alphabet": 0,
+    "duplicate": 258157,
+    "exact_reference": 290651
+  },
+  "reference_similarity": {
+    "inspected": 250000,
+    "kept": 163396,
+    "rejected_by_reference_similarity": 86604,
+    "max_similarity": 0.8,
+    "seconds": 882.2
+  }
+}
